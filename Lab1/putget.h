@@ -32,6 +32,6 @@ char getchar(void)
     RI0 =0;
     c = SBUF0;
 // Echoing the get character back to the terminal is not normally part of getchar()
-    putchar(c);    // echo to terminal
+//    putchar(c);    // echo to terminal
     return SBUF0;
 }

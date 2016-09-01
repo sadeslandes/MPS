@@ -56,7 +56,7 @@ void main(void)
         printf("1=repeat, 2=clear, 0=quit.\n\n\r"); // Menu of choices
 
         choice = getchar();
-//      putchar(choice);
+        putchar(choice);
 
         // select which option to run    
         P1 |= 0x40;                     // Turn green LED on

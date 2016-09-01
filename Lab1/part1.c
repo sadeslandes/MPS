@@ -14,7 +14,6 @@
 #include <c8051f120.h>
 #include <stdio.h>
 #include "putget.h"
-#include "ctype.h"
 
 //------------------------------------------------------------------------------------
 // Global Constants
@@ -37,6 +36,7 @@ void UART0_INIT(void);
 void main(void)
 {
     char choice;
+	//unsigned char row = 12;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
@@ -49,33 +49,40 @@ void main(void)
 
     printf("\033[2J");                  // Erase screen & move cursor to home position
 	
-	printf("\033[33m");					// Set the text to be yellow on blue background
+	printf("\033[1;33m");					// Set the text to be yellow on blue background
 
    	
-	printf("\033[2;30H");				// Show the exit commands at the top of the screen
-	printf("Exit command is: <ctrl>  \n\n\r");
+	printf("\033[2;30H");				// Center text
+	printf("Exit command is: <ESC>  \n\n\r");
 
-	printf("\033[12;24r");				// Set scroll area	
+	printf("\033[12;25r");				// Set scroll area	
+
+	printf("\033[12;1H");
+	printf("\033[s");
 
     while(1)
     {
-		// Get the keyboard character and output it to the terminal
 		
+		// Get the keyboard character and output it to the terminal
 		printf("\033[6;1H");			// Move cursor to row 6
-		printf("The keyboard character is ");		
-
-		printf("\033[37m");				// Set character to white 
+		printf("The keyboard character is ");	
+		
+		printf("\033[6;27H");				// Move cursor
 		choice = getchar();
-		if (choice > 0x20 && choice < 0x7E){
-			printf("\033[33m");				// Print a yellow period after the entered key
-			printf(".");
+		if (choice > 0x20 && choice < 0x7E){		//Check if input is printable
+			printf("\033[1;37m");					// Set character to white
+			putchar(choice);
+			printf("\033[1;33m.");					// Print a yellow period after the entered key
 		}	
 		else{
-			printf("\033[12;1H");			// Move to line 12
-			printf("The keyboard character $%x is ", choice);
-			printf("\033[4m 'not printable' \n");				// Underscore
+			printf("\033[u\a");								// Restore cursor position and beep
+			printf("\033[5m");								// Turn blink on
+			printf("The keyboard character $%02x is ", choice);
+			printf("\033[4m'not printable'\033[24m.\n\r");		// Underscore
+			printf("\033[s");  								// Save cursor position
+			printf("\033[25m"); 							// Blink off
+
 		}
-			
     }
 }
 
