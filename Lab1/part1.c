@@ -49,7 +49,7 @@ void main(void)
 
     printf("\033[2J");                  // Erase screen & move cursor to home position
 	
-	printf("\033[1;33m");					// Set the text to be yellow on blue background
+	printf("\033[1;33m");					// Set the text to be yellow (background is already blue)
 
    	
 	printf("\033[2;30H");				// Center text
@@ -72,7 +72,7 @@ void main(void)
 		if (choice == 0x1b){
 			return;
 		}
-		else if (choice > 0x20 && choice < 0x7E){		//Check if input is printable
+		else if (choice >= 0x20 && choice <= 0x7E){		//Check if input is printable
 			printf("\033[1;37m");					// Set character to white
 			putchar(choice);
 			printf("\033[1;33m.");					// Print a yellow period after the entered key
