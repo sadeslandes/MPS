@@ -35,9 +35,8 @@ void UART0_INIT(void);
 //------------------------------------------------------------------------------------
 void main(void)
 {
-    char choice;
-	unsigned int port1;
-	//unsigned char row = 12;
+    //char choice;
+	unsigned char port1;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
@@ -48,14 +47,12 @@ void main(void)
 
     SFRPAGE = UART0_PAGE;               // Direct output to UART0
 	
-
-	
+	printf("\033[2J");                  // Clear screen and reset curosr
+	P2 = 0xF0;
+	printf("Starting value P2 = 0x%02x\n\r",P2);
 	while(1){
-		
 		port1 = P1;
 		P2 = port1;
-
-
 	}
     
 }
@@ -112,13 +109,13 @@ void PORT_INIT(void)
     SFRPAGE  = CONFIG_PAGE;
     XBR0     = 0x04;                    // Enable UART0
     XBR1     = 0x00;
-    XBR2     = 0x40;                    // Enable Crossbar and weak pull-up
-    
-	P0MDOUT |= 0x01;                    // Set TX0 on P0.0 pin to push-pull
-    P1MDOUT &= 0x00;
-	P1MDIN  |= 0xFF;                    // 
-	P2MDOUT |= 0xFF;					//
-	SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
+    XBR2     = 0x40;                    // Enable Crossbar (XBARE) and weak pull-up
+    P0MDOUT |= 0x01;                    // Set TX0 on P0.0 pin to push-pull
+	
+	P2MDOUT = 0xFF;						// Set port 2 to push-pull
+	P1MDOUT = 0x00;                     // Set port 1 to open-drain
+
+    SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
 }
 
 //------------------------------------------------------------------------------------

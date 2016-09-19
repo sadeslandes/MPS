@@ -57,7 +57,7 @@ void main(void)
 
 	printf("\033[12;25r");				// Set scroll area	
 
-	printf("\033[12;1H");
+	printf("\033[12;1H");      // Jump to line 12 and save position
 	printf("\033[s");
 
     while(1)
@@ -69,7 +69,10 @@ void main(void)
 		
 		printf("\033[6;27H");				// Move cursor
 		choice = getchar();
-		if (choice > 0x20 && choice < 0x7E){		//Check if input is printable
+		if (choice == 0x1b){
+			return;
+		}
+		else if (choice > 0x20 && choice < 0x7E){		//Check if input is printable
 			printf("\033[1;37m");					// Set character to white
 			putchar(choice);
 			printf("\033[1;33m.");					// Print a yellow period after the entered key
