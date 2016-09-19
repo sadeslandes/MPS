@@ -1,13 +1,8 @@
 //------------------------------------------------------------------------------------
-// Hello.c
+// Lab1-1
 //------------------------------------------------------------------------------------
-//8051 Test program to demonstrate serial port I/O.  This program writes a message on
-//the console using the printf() function, and reads characters using the getchar()
-//function.  An ANSI escape sequence is used to clear the screen if a '2' is typed. 
-//A '1' repeats the message and the program responds to other input characters with
-//an appropriate message.
-//
-//Any valid keystroke turns on the green LED on the board; invalid entries turn it off
+// Nick Choi, Samuel Deslandes
+// C program which awaits a user keystoke and if printable, displas it on the terminal
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
@@ -48,44 +43,18 @@ void main(void)
     SFRPAGE = UART0_PAGE;               // Direct output to UART0
 
     printf("\033[2J");                  // Erase screen & move cursor to home position
-	
-	printf("\033[1;33m");					// Set the text to be yellow (background is already blue)
-
-   	
-	printf("\033[2;30H");				// Center text
 	printf("Exit command is: <ESC>  \n\n\r");
-
-	printf("\033[12;25r");				// Set scroll area	
-
-	printf("\033[12;1H");      // Jump to line 12 and save position
-	printf("\033[s");
-
-    while(1)
+	while(1)
     {
-		
-		// Get the keyboard character and output it to the terminal
-		printf("\033[6;1H");			// Move cursor to row 6
-		printf("The keyboard character is ");	
-		
-		printf("\033[6;27H");				// Move cursor
-		choice = getchar();
-		if (choice == 0x1b){
+		choice = getchar(); // Await and capture user input 
+		if (choice == 0x1b){ // If <ESC> is pressed end the program
 			return;
 		}
 		else if (choice >= 0x20 && choice <= 0x7E){		//Check if input is printable
-			printf("\033[1;37m");					// Set character to white
-			putchar(choice);
-			printf("\033[1;33m.");					// Print a yellow period after the entered key
+			printf("The keyboard character is ");
+			putchar();
+			printf(".\n\r");
 		}	
-		else{
-			printf("\033[u\a");								// Restore cursor position and beep
-			printf("\033[5m");								// Turn blink on
-			printf("The keyboard character $%02x is ", choice);
-			printf("\033[4m'not printable'\033[24m.\n\r");		// Underscore
-			printf("\033[s");  								// Save cursor position
-			printf("\033[25m"); 							// Blink off
-
-		}
     }
 }
 

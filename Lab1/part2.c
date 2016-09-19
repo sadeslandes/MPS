@@ -1,8 +1,9 @@
 //------------------------------------------------------------------------------------
-// Lab1-3
+// Lab1-2
 //------------------------------------------------------------------------------------
-// C program which reads input from a potentiometer module and writes that value to port 2
-// which is connected to an LED module
+// Nick Choi, Samuel Deslandes
+// An enhancment of the program from Lab1-1, which uses ANSI escape sequences to format
+// text on the VT100 terminal.
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
@@ -30,10 +31,8 @@ void UART0_INIT(void);
 //------------------------------------------------------------------------------------
 void main(void)
 {
-    //char choice;
-	unsigned char port1;
-
-    WDTCN = 0xDE;                       // Disable the watchdog timer
+    char choice;
+	WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
 
     PORT_INIT();                        // Initialize the Crossbar and GPIO
@@ -41,15 +40,47 @@ void main(void)
     UART0_INIT();                       // Initialize UART0
 
     SFRPAGE = UART0_PAGE;               // Direct output to UART0
+
+    printf("\033[2J");                  // Erase screen & move cursor to home position
 	
-	printf("\033[2J");                  // Clear screen and reset curosr
-	P2 = 0xF0;
-	printf("Starting value P2 = 0x%02x\n\r",P2);
-	while(1){
-		port1 = P1;   // Read port 1 
-		P2 = port1;   // Write to port 2
-	}
-    
+	printf("\033[1;33m");					// Set the text to be yellow (background is already blue)
+
+   	
+	printf("\033[2;30H");				// Center text
+	printf("Exit command is: <ESC>  \n\n\r");
+
+	printf("\033[12;25r");				// Set scroll area	
+
+	printf("\033[12;1H");      // Jump to line 12 and save position
+	printf("\033[s");
+
+    while(1)
+    {
+		
+		// Get the keyboard character and output it to the terminal
+		printf("\033[6;1H");			// Move cursor to row 6
+		printf("The keyboard character is ");	
+		
+		printf("\033[6;27H");				// Move cursor
+		choice = getchar();
+		if (choice == 0x1b){
+			return;
+		}
+		else if (choice >= 0x20 && choice <= 0x7E){		//Check if input is printable
+			printf("\033[1;37m");					// Set character to white
+			putchar(choice);
+			printf("\033[1;33m.");					// Print a yellow period after the entered key
+		}	
+		else{
+			printf("\033[u\a");								// Restore cursor position and beep
+			printf("\033[5m");								// Turn blink on
+			printf("The keyboard character $%02x is ", choice);
+			printf("\033[4m'not printable'\033[24m.\n\r");		// Underscore
+			printf("\033[s");  								// Save cursor position
+			printf("\033[25m"); 							// Blink off
+
+		}
+    }
 }
 
 //------------------------------------------------------------------------------------
@@ -104,11 +135,9 @@ void PORT_INIT(void)
     SFRPAGE  = CONFIG_PAGE;
     XBR0     = 0x04;                    // Enable UART0
     XBR1     = 0x00;
-    XBR2     = 0x40;                    // Enable Crossbar (XBARE) and weak pull-up
+    XBR2     = 0x40;                    // Enable Crossbar and weak pull-up
     P0MDOUT |= 0x01;                    // Set TX0 on P0.0 pin to push-pull
-	
-	P2MDOUT = 0xFF;						// Set port 2 to push-pull
-	P1MDOUT = 0x00;                     // Set port 1 to open-drain
+    P1MDOUT |= 0x40;                    // Set green LED output P1.6 to push-pull
 
     SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
 }
