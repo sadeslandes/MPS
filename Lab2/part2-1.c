@@ -12,7 +12,6 @@
 #define EXTCLK      22118400    // External oscillator frequency in Hz
 #define SYSCLK      49766400    // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200      // UART baud rate in bps
-//#define BAUDRATE  19200       // UART baud rate in bps
 char timer0_flag = 0;
 //-------------------------------------------------------
 // Function PROTOTYPES
@@ -29,7 +28,6 @@ void TIMER0_ISR(void) __interrupt 1;
 //------------------------------------------------------
 
 void main(void){
-	__bit restart = 0;
 	unsigned int tenths = 0;
 
 	SFRPAGE = CONFIG_PAGE;
@@ -40,22 +38,21 @@ void main(void){
 	UART0_INIT();
 
 	SFRPAGE = LEGACY_PAGE;
-	IT0 = 1; 
+	IT0 = 1;    // /INT0 triggered on negative falling edge
 
 	printf("\033[2J");
-	printf("MPS Interrupt Switch Test \n\n\r");
-	printf("Ground /INT0 on P0.2 to generate an interrupt. \n\n\r");
-
+	printf("MPS Interrupt Timer Test \n\n\r");
+	
 	SFRPAGE = CONFIG_PAGE;
-	EX0 = 1; 
+	EX0 = 1;    // Enable external interrupt
 
 	SFRPAGE = UART0_PAGE;
 	
-
+	
 	while(1){
-		if(timer0_flag == 3){
-			tenths+=1;
-			printf("Elapsed Time: %u\n\r", tenths);
+		if(timer0_flag == 3){ // Wait for 3 overflows
+			tenths+=1;        
+			printf_fastf("Elapsed Time: %.2f\n\r", tenths*0.1);
 			timer0_flag = 0;
 		}
 	}
@@ -65,6 +62,7 @@ void main(void){
 //-------------------------------------
 
 void TIMER0_ISR(void) __interrupt 1{
+	// Reset timer0 value
 	TH0 = 0x00;
 	TL0 = 0x00;
 	timer0_flag += 1;
