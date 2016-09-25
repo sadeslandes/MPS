@@ -19,7 +19,7 @@ char timer0_flag = 0;
 __bit reactPress = 0;
 __bit resetPress = 0;
 char react_flag;
-char reset_flag;
+//char reset_flag;
 
 //-------------------------------------------------------
 // Function PROTOTYPES
@@ -31,19 +31,21 @@ void UART0_INIT(void);
 void TIMER0_INIT(void);
 void TIMER0_ISR(void) __interrupt 1;
 void reactPress_ISR (void) __interrupt 0;
-void resetPress_ISR (void) __interrupt 2;
+//void resetPress_ISR (void) __interrupt 2;
 
 //------------------------------------------------------
 // Main Function 
 //------------------------------------------------------
 
 void main(void){
+	// Declare local variables 
+	char choice;
 	unsigned int rand_;
 	unsigned char tenths = 0;
-	unsigned int reactions = 0;
+	float reactions = 0;
 	unsigned char trials = 0;
 	SFRPAGE = CONFIG_PAGE;
-
+	
 	PORT_INIT();
 	TIMER0_INIT();
 	SYSCLK_INIT();
@@ -51,8 +53,8 @@ void main(void){
 
 	SFRPAGE = LEGACY_PAGE;
 	IT0 = 1; 
-	IT1 = 1;
-
+	
+	// Display the set up information
 	printf("\033[2J");
 	printf("MPS Reaction Game \n\n\r");
 	printf("Ground /INT0 on P0.2 to generate an interrupt. \n\n\r");
@@ -61,39 +63,63 @@ void main(void){
 	EX0 = 1; 
 
 	SFRPAGE = UART0_PAGE;
-	
-	reactPress = 0;
+	// Seed the random number generator
 	srand(78);
 	while(1){
-		//generate random number
+		//Generate random number 
 		rand_ = rand()%10;
-		printf("%i\n\r", rand_);
-		TR0 = 1; //Start Timer0
+		TR0 = 1; 								//Start Timer0
+		// Wait for the random delay to elapse
 		while(timer0_flag/2 != rand_){
 
 		}
-		printf("PRESS NOW"); 
+		// Tell user to press the button and start keeping track of reaction time
+		printf("PRESS NOW\n\n\r"); 
 		timer0_flag = 0;
+		// Wait for the user to press the reaction button
 		while(!react_flag){
 
 		}
+		// Determine how long their response took in tenths of a second (truncates)
 		tenths = timer0_flag/2;
+		// Increment the number of trials and add the reaction time to the running total
 		trials += 1;
-		reactions += 1;
-		printf("Your response time was: %u tenths\n\n\r", tenths);
-		printf("Your average response time is: %f\n\n\r", (float)reactions/trials);
+		reactions += tenths*.1;
+		// If they respond in under .2s the output text is green
+		if(tenths < 2){
+			printf("\033[1;32m");
+		}
+		// If they respond in under .5s the output text is yellow
+		else if(tenths < 5){
+			printf("\033[1;33m");
+		}
+		// Otherwise, the output text is red
+		else{ 
+			printf("\033[1;31m");
+		}
+		// Display the user's response time and average response time 
+		printf_fast_f("Your response time was: %.2f seconds\n\r", tenths*0.1);
+		printf_fast_f("Your average response time is: %.2f\n\n\r", reactions/trials);
+		printf("\033[1;37m");
 		
-		
-		
+		// Provide the user with the option to reset the program every 5 trials
+		if(trials % 5 == 0){
+			printf("Do you want to continue? Press Y or N\n\n\r");
+			while(1){
+				choice = getchar();
+				if (choice == 'n'){
+					return;
+				} else if(choice == 'y'){
+					break;
+				}	
+			}
+		}
+		// Reset the variables 
 		TR0 = 0;
 		TH0 = 0;
 		TL0 = 0;
 		timer0_flag = 0;
 		react_flag = 0;
-		if(reset_flag){
-			reset_flag = 0;
-			return;
-		}
 	}
 }
 //-------------------------------------
@@ -106,12 +132,11 @@ void TIMER0_ISR(void) __interrupt 1{
 	timer0_flag += 1;
 }
 
+// Set the flag for the reaction button if it is pressed. Uses software debouncing
 void reactPress_ISR (void) __interrupt 0{
-	react_flag = 1;	 
-}
-
-void resetPress_ISR (void) __interrupt 0{
-	reset_flag = 1;	 
+	if(timer0_flag > 0){
+		react_flag = 1;
+	}	 
 }
 
 //------------------------------------------------------
