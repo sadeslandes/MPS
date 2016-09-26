@@ -95,8 +95,6 @@ void PORT_INIT(void){
 // SYSCLK_Init
 //--------------------------------------------------
 
-// Initialize the system clock 22.1184Mhz
-
 void SYSCLK_INIT(void){
 	int i;
 	
@@ -111,7 +109,7 @@ void SYSCLK_INIT(void){
 	CLKSEL  = 0x01;             // SYSCLK derived from the External Oscillator circuit.
 	OSCICN  = 0x00;             // Disable the internal oscillator.
 	
-	SFRPAGE = CONFIG_PAGE;
+	SFRPAGE = CONFIG_PAGE;      // Set PLL to multiply external oscillator by (9/4)
 	PLL0CN  = 0x04;
 	SFRPAGE = LEGACY_PAGE;
 	FLSCL   = 0x10;
@@ -162,16 +160,16 @@ void TIMER0_INIT(void){
 
 	SFRPAGE = TIMER01_PAGE;	
 
-	TMOD &= 0xF0;
+	TMOD &= 0xF0;				// Timer0, Mode 1: 16-bit counter/timer.
 	TMOD |= 0x01;
-	TH0 = 0x35;
+	TH0 = 0x35;					// Set high byte such that timer0 starts at 0x3580
 	CKCON &= ~0x09;
-	CKCON |= 0x02;
-	TL0 = 0x80;
-	TR0 = 1;
+	CKCON |= 0x02;				// Timer0 uses SYSCLK/48 as base
+	TL0 = 0x80;					// Set high byte such that timer0 starts at 0x3580
+	TR0 = 1;					// Start timer0
 
 	SFRPAGE = CONFIG_PAGE;
-	ET0 = 1;
+	ET0 = 1;					// Enable timer0 interrupt
 
 	SFRPAGE = SFRPAGE_SAVE;
 }

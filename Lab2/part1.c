@@ -28,8 +28,6 @@ void SW2_ISR (void) __interrupt 0;
 //------------------------------------------------------
 
 void main(void){
-	__bit restart = 0;
-
 	SFRPAGE = CONFIG_PAGE;
 
 	PORT_INIT();
@@ -37,20 +35,20 @@ void main(void){
 	UART0_INIT();
 
 	SFRPAGE = LEGACY_PAGE;
-	IT0 = 1; 
+	IT0 = 1;     // /INT0 triggered on negative falling edge
 
 	printf("\033[2J");
 	printf("MPS Interrupt Switch Test \n\n\r");
 	printf("Ground /INT0 on P0.2 to generate an interrupt. \n\n\r");
 
 	SFRPAGE = CONFIG_PAGE;
-	EX0 = 1; 
+	EX0 = 1;   // Enable external interrupts
 
 	SFRPAGE = UART0_PAGE;
 	
-	butpress = 0;
+	butpress = 0; //  clear button flag
 	while(1){
-		if(butpress == 1){
+		if(butpress){ // if button flag is set
 			printf("/INT0 grounded! \n\n\r");
 			butpress = 0;
 		}
@@ -61,7 +59,7 @@ void main(void){
 //-------------------------------------
 
 void SW2_ISR (void) __interrupt 0{
-	butpress = 1;	 
+	butpress = 1;	 // set button flag
 }
 
 //------------------------------------------------------
