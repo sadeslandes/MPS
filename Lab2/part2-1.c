@@ -109,7 +109,7 @@ void SYSCLK_INIT(void){
 	CLKSEL  = 0x01;             // SYSCLK derived from the External Oscillator circuit.
 	OSCICN  = 0x00;             // Disable the internal oscillator.
 	
-	CLKSEL  = 0x01;             // SYSCLK derived from the PLL.
+	CLKSEL  = 0x01;             // SYSCLK derived from external oscillator.
 	
 	SFRPAGE = SFRPAGE_SAVE;     // Restore SFR page.
 }
@@ -148,15 +148,15 @@ void TIMER0_INIT(void){
 
 	SFRPAGE = TIMER01_PAGE;	
 
-	TMOD &= 0xF0;
+	TMOD &= 0xF0; 				// Timer0, Mode 1: 16-bit counter/timer.
 	TMOD |= 0x01;
-	TH0 = 0x00;
-	CKCON &= ~0x0B;
-	TL0 = 0x00;
-	TR0 = 1;
+	TH0 = 0x00;					// Set high byte to 0
+	CKCON &= ~0x0B;				// Timer0 uses SYSCLK/12 as base
+	TL0 = 0x00;					// Set low byte to 0
+	TR0 = 1;					// Start timer0
 
 	SFRPAGE = CONFIG_PAGE;
-	ET0 = 1;
+	ET0 = 1;					// Enable timer0 interrupt
 
 	SFRPAGE = SFRPAGE_SAVE;
 }
