@@ -7,6 +7,7 @@
 \usepackage{indentfirst}
 \usepackage{hyperref}
 \usepackage{siunitx}
+\usepackage{float}
 
 \lstset{ %
 	%language=C,                % choose the language of the code
@@ -31,20 +32,21 @@
 \maketitle
 \pagebreak
 \section{Introduction}
-The overall goal of this lab is to become familiar with utilizing the registers on the 8051 as well as performing fundamental I/O operations with it. This lab also served as an introduction to the VT100 Terminal and the utilization of its ANSI escape sequences.
+The overall goal of this lab is to become familiar with configuring timers with interrupts on the 8051 and utilizing interrupt service routines (ISR) to perform operations based upon the timers’ interrupts. 
 
-This lab was divided into 3 parts. The first was an exercise in basic terminal I/O in which a C program was written to await a user keystroke and, if printable, output it onto the terminal display. The second part was an enhancement of the first part with heavy usage of ANSI escape codes to format text on the display. The ANSI escape codes are special sequences beginning with \textless ESC\textgreater (\textbackslash033 in octal or \$1B in hex) which modify terminal behavior. This includes features such as underlined text, background/foreground color changes, changing the cursor position, selectable scrolling, and more. The third part of the lab involved configuring ports on the 8051 to be either inputs or outputs. In this part of the lab, hardware connected to the input port could be used to change the state of hardware connected to the output ports of the 8051. 
+The lab is divided into three sections. In the first section, a C program is created to react to an external interrupt 0 generated whenever a pushbutton on the protoboard is pressed. In the second section, two additional C programs are written in order to display elapsed time measured in $0.1$ seconds. Each program uses different timer configurations and methods of measuring a tenth of a second; one program will round its calculations in order to approximate $0.1$ seconds, while the second program will be exact, with no need for rounding or approximations. In the third section, the programs from the first two sections of the lab are combined to create a reaction based game which records how long it takes a user to respond to prompts which are randomly flashed on the ANSI terminal. The user has the option to reset the terminal every five reactions and an enhancement was added so that the color of the text in the ANSI terminal changes depending on the relative speed of the user's reaction time. 
+ 
 
 \section{Methods}
 \subsection{Software}
-The code for parts 1, 2 and 3 can be found in Appendix A, B and C respectively. All code was uploaded and run on the 8051 through the programming/debugging USB port. 	
+The code for parts 1, 2 and 3 can be found in the appendix below. All code was uploaded and run on the 8051 through the programming/debugging USB port. 	
 
 \subsubsection{Part 1}
-The C program for the first section of the lab was a straightforward application of using an external interrupt source, such as the grounding of a pushbutton, to generate an interrupt which would then cause text to be displayed on the terminal. External interrupt 0 (/INT0) was used as a the interrupt source for this lab; In order to configure the 8051 for this, interrupts must first be globally enabled by setting bit 7 of the ``Interrupt Enable" SRF (IE) as well as bit 0 of the same SRF to enable /INT0. These are bit addressable addresses which correspond to ``EA" and ``EX0" respectively. The operation mode of /INT0 can then be set to be active logic low triggered or falling edge triggered by clearing or setting bit 0 of the ``Timer Control" SFR (TCON), which is bit addressable as ``IT0". In this lab IT0 was set to be triggered by a negative falling edge (IT0 = 1) because it was no desirable to have multiple interrupts be generated if the user holds the pushbutton down. 
+The C program for the first section of the lab was a straightforward application of using an external interrupt source, such as the grounding of a pushbutton, to generate an interrupt which would then cause text to be displayed on the terminal. External interrupt 0 (/INT0) was used as a the interrupt source for this lab; In order to configure the 8051 for this, interrupts must first be globally enabled by setting bit 7 of the ``Interrupt Enable" SFR (IE) as well as bit 0 of the same SFR to enable /INT0. These are bit addressable addresses which correspond to ``EA" and ``EX0" respectively. The operation mode of /INT0 can then be set to be active logic low triggered or falling edge triggered by clearing or setting bit 0 of the ``Timer Control" SFR (TCON), which is bit addressable as ``IT0". In this lab IT0 was set to be triggered by a negative falling edge (IT0 = 1) because it was no desirable to have multiple interrupts be generated if the user holds the pushbutton down. 
 
-In order to interface the interrupt to the pushbutton the crossbar must also be configured to route /INT0 to a port pin. This can be done by setting bit 2 of the ``XBR1" SRF (XBR1 = 0x04). For the crossbar settings used in this section, /INT0 was routed to pin 2 on port 0, which must be configured as an input. This is done by using the P0MDOUT SFR to set P0.2 in open-drain mode, then by using the P0 SFR to set P0.2 to high impedance mode.  
+In order to interface the interrupt to the pushbutton the crossbar must also be configured to route /INT0 to a port pin. This can be done by setting bit 2 of the ``XBR1" SFR (XBR1 = 0x04). For the crossbar settings used in this section, /INT0 was routed to pin 2 on port 0, which must be configured as an input. This is done by using the P0MDOUT SFR to set P0.2 in open-drain mode, then by using the P0 SFR to set P0.2 to high impedance mode.  
 
-When /INT0 is triggered the program's current operation is preempted by the interrupt service routine (ISR) associated with the interrupt generated. The instructions that take place in the ISR should be limited to only a small number of fast operations. Rather than executing a lengthy I/O operation such as ``printf()" here, a global variable is used as a flag which allows the rest of the program to determine whether an interrupt has occurred. All the ISR has to do in this case is set the flag. When declaring the ISR function, it is important to remember to include the interrupt's priority; /INT0 has a priority level of 0 (the highest priority).
+When /INT0 is triggered the program's current operation is preempted by the ISR associated with the interrupt generated. The instructions that take place in the ISR should be limited to only a small number of fast operations. Rather than executing a lengthy I/O operation such as ``printf()" here, a global variable is used as a flag which allows the rest of the program to determine whether an interrupt has occurred. All the ISR has to do in this case is set the flag. When declaring the ISR function, it is important to remember to include the interrupt's priority; /INT0 has a priority level of 0 (the highest priority).
 
 The main function for this section is simple. Before entering the infinite loop the variable used as the interrupt flag is cleared. In the loop the program checks if the flag has been set by the ISR and if it has the desired text is printed to the display and the flag is cleared.
 
@@ -87,66 +89,63 @@ This value, however, is too large to store in a 16bit variable. To remedy this i
 \end{math}, or 0x3580 in hex.
 
 \subsubsection{Part 3}
-The code for section 3 had a different application than the previous two sections and was more hardware focused. In terms of software, all of port 1 had to be configured to be in open-drain mode (input), and all of port 2 to push-pull mode (output). This was done by setting all of the bits of the P1MDOUT special function register (SFR) low, and all of those of P2MDOUT high. This should be done in the 'PORT\_INIT()' function. In the main function, all that had to be done was read the value of port 1 into port 2. This could be done using the P1 and P2 port SFRs. 
+This section combined the code from section 1 and the accurate timer of section 2 to make a reaction time game. The external interrupt, port, and timer configurations were exactly as listed in those sections.
+
+The game routine takes place in the infinite loop of the main function. First a random number is generated using ``rand()''. This number represents the number of tenths of seconds until the player is sent the signal to press the button. It is modded by 10 to ensure that the player does not wait more than a second between button presses. It is at this point that the timer is started. A delay is implemented using an empty while loop which the program moves on from after the appropriate number of tenths of seconds have elapsed. The message ``PRESS NOW'' is then sent to the terminal to alert the player that the button may be pressed. The timer overflow counting variable is reset and the program waits for the player to press the button using a while loop and a button press flag that is set in the /INT0 ISR. Once the player presses the button the elapsed time is calculated using the timer0 overflow counting variable. This value is printed to the terminal to together with an overall average of the player's response time. In order to accomplish the number of rounds the user has played is stored and incremented when the user pushes the button, and the sum of player's reaction times are stored in another variable. Likewise, this sum is updated after the player presses the button. In order to give additional feedback to the player, the text is displayed in 3 colors, green, yellow, and red, depending on how quickly the user presses the button. If the player reacts within \SI{0.2}{s} the text will be green, within \SI{0.5}{s} the text will be yellow, otherwise the text will be red. After the feedback has been printed the timer is stopped, its value is reset to the timer's starting value, and the timer0 overflow counting variable and button press flag are cleared.
+
+Additionally, every 5 rounds the program will pause to ask the user if they wish to keep playing. Using ``getchat()'' the user's input can be read. If the user presses `y' on the keyboard, the game continues. If the user presses `n', the game is reset and the program restarts. The program will not move one unless one of the two keys is pressed.
 
 \subsection{Hardware}
 
-Parts 1 and 2 of this lab did not require any hardware other than a serial-to-USB adapter in order to interface with the terminal.
+Sections 1 and 3 of this lab did were identical in terms of hardware. Section 2 required no hardware other than a serial-to-USB adapter in order to interface with the terminal.
 
-In the third section of the lab, the pins on port 1 were connected to the input device, the potentiometer module, and pins on port 2 were connected to the output device, the LED module. Since there were only 4 potentiometers on the potentiometer module only the first 4 pins on each port were used (P1.0 - P1.3 and P2.0 - P2.3). These corresponded to pins 12, 13, 10, and 11 on the EVB for port 1, and 29, 30, 27, and 28 for port 2. A circuit diagram can be found in the appendices, section 5.4.1.
-
-The input pins of the LED module have inverters incorporated into them so that whenever a logic high is applied to an input pin, the signal is changed to be a logic low. This inversion allows the LED to illuminate because there will be a voltage difference across the anode and cathode of the LED. If a logic low is applied to the input pin, the signal is changed to be a logic high. This removes the voltage difference between the anode and cathode of the LED and thus prevents the LED from lighting up. 
+In sections 1 and 3 the pushbutton included on the breadboard was used. It was wired such that the button would be grounded when pressed, with the opposite button terminal connected to pin 18 on the EVB, corresponding to P0.2 of the 8051.
  
 \section{Results}
 
-By completing section one of the lab, a functioning C program was produced which read keyboard input and displayed it in an ANSI terminal. After completing section two, an improved version of the program from section one was produced. This version reacted to user input and manipulated the output of the ANSI terminal in several ways. The final deliverable was an LED module which was controlled by a potentiometer module. 
+By completing section one of the lab, a functioning C program was produced to react to the press of a pushbutton wired on the protoboard. After completing section two of the lab, two new programs were developed to configure timers on the 8051 to display the elapsed time in tenths of a second using an accurate method and an inaccurate method. The final deliverable was a reaction based game which displayed the time that it took the user to press a pushbutton in response to ANSI terminal prompts. The program allowed the user to reset the terminal every 5 responses. To further enhance the final deliverable, the program was modified so that the text color of the ANSI terminal changed between red, yellow and green based upon the reaction time. 
+
 
 \section{Conclusion}
 
-The end results of this lab ultimately matched with the initial goals however there were numerous instances where our system’s expected behavior did not correspond to its actual behavior. In order to properly produce the results that we needed for this lab, various hardware and software debugging techniques were utilized in order to verify the performance of each section of the lab. With some of these testing techniques, it was determined that the inputs to the 8051 utilize Schmitt triggers in order to prevent oscillating logic highs and logic lows. The use of Schmitt triggers makes the inputs of the 8051 more resilient to noise because they create separate thresholds for high and low values rather thancontent... having one shared boundary value. 
+The end results of the lab matched with the initial goals however there were numerous instances where the system did not behave as expected or calculations needed to be repeated. The initial intention for the lab’s enhancement was to add an additional button to pause the game however, due to the prioritization structure of the 8051’s external interrupts, this feature did not work as planned with the code that we needed. Thus, a design tradeoff was made to not massively alter the code structure and to design a different enhancement. 
 
-If more time was given to complete this lab assignment, additional conditional statements could be added to further enhance the responses of the ANSI terminal to user input. These statements could incorporate more escape sequences to display new error messages, to integrate hardware components to the error messages or to further manipulate the text formatting in the ANSI terminal. 
+If more time was given to complete this lab assignment, additional conditional statements could be added so that the program ignores premature button presses. This would improve the robustness of the code and would make the game much fairer for all users. 
+
 
 
 \pagebreak
 \section{Appendices}
 \subsection{Modified putget.h}
 	\lstinputlisting{putget.h}
+\subsection{Circuit Schematic for sections 1 and 3}
+	\begin{figure}[H]
+		\centering
+		\includegraphics{schematic.png}
+		\caption{Circuit schematic for parts 1 and 3}
+		\label{schematic}
+	\end{figure} 
 \subsection{Part 1}
-	\subsubsection{Circuit Schematic}
-		\begin{figure}[h]
-			%\centering
-			%\includegraphics{schematic1.png}
-			\caption{Circuit schematic for part 1}
-			\label{schematic}
-		\end{figure} 
 	\subsubsection{Code}
 		\lstinputlisting{part1.c}
 \subsection{Part 2}
 	\subsubsection{Inaccurate timer code}
 		\lstinputlisting{part2-1.c}
-	\subsection{Accurate timer code}
+	\subsubsection{Accurate timer code}
 		\lstinputlisting{part2-2.c}		
 
 %\pagebreak
 \subsection{Part 3}
-	\subsubsection{Circuit Schematic}
-		\begin{figure}[h]
-			%\centering
-		%	\includegraphics{schematic3.png}
-			\caption{Circuit schematic for part 3}
-			\label{schematic}
-		\end{figure} 
-	\pagebreak
+	%\pagebreak
 	\subsubsection{Code}
 		\lstinputlisting{part3.c}
 	
 	
 \section{References} 
 \noindent
-``MPS Lab 1," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/MPS_Lab_Ex1-IDE_ANSI.pdf}. Accessed: Sep. 17, 2016.\\
+``MPS Lab 2," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/MPS_Lab_Ex2-Intrpt.pdf}. Accessed: Sep. 22, 2016.\\
 \newline\noindent
-``C8051 Manual," in RPI ECSE Department, 1.4 ed., 2005. [Online]. Available: \url{https://www.ecse.rpi.edu/courses/CStudio/Silabs/C8051F12x-13x.pdf}. Accessed: Sep. 17, 2016.
+``C8051 Manual," in RPI ECSE Department, 1.4 ed., 2005. [Online]. Available: \url{https://www.ecse.rpi.edu/courses/CStudio/Silabs/C8051F12x-13x.pdf}. Accessed: Sep. 22, 2016.
 
 
 

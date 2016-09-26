@@ -116,8 +116,8 @@ void main(void){
 		}
 		// Reset the variables 
 		TR0 = 0;
-		TH0 = 0;
-		TL0 = 0;
+		TH0 = 0x35;
+		TL0 = 0x80;
 		timer0_flag = 0;
 		react_flag = 0;
 	}
