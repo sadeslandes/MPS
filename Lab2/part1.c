@@ -82,7 +82,7 @@ void PORT_INIT(void){
 	XBR2    = 0x40;             // Enable Crossbar and weak pull-ups.
 	P0MDOUT = 0x01;             // P0.0 (TX0) is configured as Push-Pull for output
 	// P0.1 (RX0) is configure as Open-Drain input.
-	// P0.2 (SW2 through jumper wire) is configured as Open_Drain for input.
+	// P0.2 (pushbutton through jumper wire) is configured as Open_Drain for input.
 	P0      = 0x06;             // Additionally, set P0.0=0, P0.1=1, and P0.2=1.
 	SFRPAGE = SFRPAGE_SAVE;     // Restore SFR page.
 }

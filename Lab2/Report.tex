@@ -6,6 +6,7 @@
 \usepackage{color}
 \usepackage{indentfirst}
 \usepackage{hyperref}
+\usepackage{siunitx}
 
 \lstset{ %
 	%language=C,                % choose the language of the code
@@ -38,16 +39,54 @@ This lab was divided into 3 parts. The first was an exercise in basic terminal I
 \subsection{Software}
 The code for parts 1, 2 and 3 can be found in Appendix A, B and C respectively. All code was uploaded and run on the 8051 through the programming/debugging USB port. 	
 
-In the first section of the lab, a C program was written so that user input from a keyboard could be displayed in the ANSI terminal. The 8051 determined which keyboard character was pressed using the ``getchar()'' and ``putchar()'' functions defined in the ``putget.h'' header file. It should be noted that the ``getchar()" function was modified from the original header file to not echo captured keystrokes. The modified version can be found in section 5.1 below. Whenever a printable character was input, it was printed to the terminal display with the following message: ``The keyboard character is *."  Unprintable characters were not displayed and the program would await the user's next input. Since the program runs in an infinite loop, pressing the \textless ESC\textgreater key both restarted the C program and cleared the terminal. In order to determine whether the input was printable or not, the captured character's ASCII was compared with the printable characters on the ASCII table, which range from 0x20 (space) through 0x7E (\texttt{\char`\~}).
+\subsubsection{Part 1}
+The C program for the first section of the lab was a straightforward application of using an external interrupt source, such as the grounding of a pushbutton, to generate an interrupt which would then cause text to be displayed on the terminal. External interrupt 0 (/INT0) was used as a the interrupt source for this lab; In order to configure the 8051 for this, interrupts must first be globally enabled by setting bit 7 of the ``Interrupt Enable" SRF (IE) as well as bit 0 of the same SRF to enable /INT0. These are bit addressable addresses which correspond to ``EA" and ``EX0" respectively. The operation mode of /INT0 can then be set to be active logic low triggered or falling edge triggered by clearing or setting bit 0 of the ``Timer Control" SFR (TCON), which is bit addressable as ``IT0". In this lab IT0 was set to be triggered by a negative falling edge (IT0 = 1) because it was no desirable to have multiple interrupts be generated if the user holds the pushbutton down. 
 
-The second section enhances the C program written for the first by adding various text effects and formatting within the VT100 terminal. All of these features were produced by utilizing ANSI escape sequences; Table \ref{refTable} in section 5.3.1 contains all of the ANSI escape sequences used for this lab. 
+In order to interface the interrupt to the pushbutton the crossbar must also be configured to route /INT0 to a port pin. This can be done by setting bit 2 of the ``XBR1" SRF (XBR1 = 0x04). For the crossbar settings used in this section, /INT0 was routed to pin 2 on port 0, which must be configured as an input. This is done by using the P0MDOUT SFR to set P0.2 in open-drain mode, then by using the P0 SFR to set P0.2 to high impedance mode.  
 
-The first modification was to change the background color to blue and the foreground color to yellow. This was done using the codes ``\textbackslash033[1;43m" and ``\textbackslash033[1;33m" respectively. The first line of text contains program termination information similar to that of part 1; It is printed on line 2 of the terminal and is horizontally centered. This can be accomplished using the escape code for changing the cursor position ``\textbackslash033[\{row\};\{col\}H". In this case 2 and 30 were used for the row and column respectively. As was done in part 1, the keyboard response must also be displayed, this time on line 6 with the keyed in character printed in white. The same code above was used to move the cursor to line 6, and ``\textbackslash033[1;37m" was used to change the text's color to white. 
+When /INT0 is triggered the program's current operation is preempted by the interrupt service routine (ISR) associated with the interrupt generated. The instructions that take place in the ISR should be limited to only a small number of fast operations. Rather than executing a lengthy I/O operation such as ``printf()" here, a global variable is used as a flag which allows the rest of the program to determine whether an interrupt has occurred. All the ISR has to do in this case is set the flag. When declaring the ISR function, it is important to remember to include the interrupt's priority; /INT0 has a priority level of 0 (the highest priority).
 
-If the keyed in character was not printable, the message "The keyboard character \$XX is \underline{`not printable'}." would appear starting halfway down the terminal (line 12 in our case) and work its way down the screen. This text should be blinking and make an audible 'BEL' noise when a non-printable character is keyed in. 
+The main function for this section is simple. Before entering the infinite loop the variable used as the interrupt flag is cleared. In the loop the program checks if the flag has been set by the ISR and if it has the desired text is printed to the display and the flag is cleared.
 
-The terminal should be set such that only the bottom half of the screen scrolls. Although the escape code to change the position of the cursor could be used accomplish this, the codes to save and restore the cursors position were used instead so that we would not have to directly keep track of what line to jump to. In order to do this, even before a non-printable character was keyed in, the position of the next error message was already logged and ready to be restored and written to whenever an error message needed to be output. The error messages were terminated with the ASCII newline escape sequence ('\textbackslash n') to move the cursor down, and this new position was saved for printing the next error. When the error messages reach the bottom of the terminal, only the lines included in the selective scrolling area would scroll. The ANSI codes for saving and restoring the cursor's position are ``\textbackslash033[s" and ``\textbackslash033[u" respectively. In order to set a selective scrolling area the code ``\textbackslash033[\{start\},\{stop\}r" must be used. Only the lines between \{start\} and \{stop\} will scroll. To get the audible feedback portion the ASCII escape sequence '\textbackslash a' was used. When writing the code block pertaining to printing the error message, it is important to remember to turn off the underscore and blinking once the desired text with these effects has been printed.
+\subsubsection{Part 2}
+The code for section 2 involved utilizing a timer interrupts to display elapsed time in multiples of a tenth of a second. This was done using two methods: An inaccurate method using rounding, and an exactly accurate method. Both methods operate using the same concepts. Timer0 is used to count from a starting value until it overflows, triggering the timer0 overflow interrupt. In the ISR the timer is set to its starting value and a global variable used to count the number of overflows is incremented. Since overflows happen at a fixed frequency, by counting the number of overflows the elapsed time may be measured. For example, in the case of the accurate timer an overflow happens once every \SI{50}{ms}. In 2 overflows a tenth of a second has elapsed. 
 
+Interrupt configuration was performed similarly to section 1, one difference being that instead of setting the bit addressable address ``EX0", ``ET0" is now set. This enables timer0 interrupts rather than /INT0. 
+
+For the inaccurate method timer0 was configured as a 16bit counter with a starting value of 0, using SYSCLK/12 as a base. For this method SYSCLK used the external oscillator for a frequency of \SI{22.1184}{MHz}. The calculations for how many overflows correspond to a tenth of a second were as follows:\\
+\begin{equation}
+	= \frac{\SI{22.1184e6}{counts}}{\SI{12}{sec}}*{\left(\frac{2^{16}- \SI{1}{counts}}{\SI{}{overflow}}\right)}^{-1}
+\end{equation}
+\begin{equation}
+	= \frac{\SI{1843200}{counts}}{\SI{}{sec}}*\left(\frac{\SI{1}{overflow}}{\SI{65535}{counts}}\right)
+\end{equation}
+\begin{equation}
+	= \frac{\SI{28.125}{overflows}}{\SI{}{sec}} = \frac{\SI{2.8125}{overflow}}{\SI{0.1}{sec}}
+\end{equation}\\
+Since the number of overflows must be an integer value, the $2.8125$ was rounded up to $3$.
+
+As mentioned above, each time an overflow happed, the ISR incremented an overflow counting variable. In the infinite loop of the main function, whenever this counter had a value of $3$ the overflow counter would be reset to 0, a value counting the number of tenths of seconds elapsed would be incremented, and the elapsed time would be displayed. Since a tenth of a second is represented as a floating point data type ``printf\_fastf()'' had to be used instead of the usual ``printf()'' function.
+
+For the accurate timing method timer0 was also configured as a 16bit counter, but had a starting value of $13,696$ or 0x3580, and used SYSCLK/48 as a base. For this method SYSCLK used the external oscillator and the phase-locked loop (PLL) which multiplies its source frequency by a programmable factor. This resulted in a SYSCLK frequency of \begin{math}
+	\SI{22.1184}{MHz}*\left(\frac{9}{4}\right) = \SI{49.7664}{MHz}
+\end{math}.  The calculations for how many overflows correspond to a tenth of a second were and how to determine the timer's starting value were as follows:\\
+\begin{equation}
+	\frac{\SI{49.7664e6}{counts}}{\SI{48}{sec}} = \frac{\SI{1036800}{counts}}{\SI{}{sec}}
+\end{equation}\\
+This represents the timer's counting speed. From this the number of counts per overflow necessary for one overflow to happen in a tenth of a second can be calculated.\\
+\begin{equation}
+	\frac{\SI{1036800}{counts}}{\SI{}{sec}}*\frac{1}{x}\frac{\SI{}{overflow}}{\SI{}{counts}} = \frac{\SI{1}{overflow}}{\SI{0.1}{sec}}
+\end{equation}
+\begin{equation}
+ x = \SI{103680}{counts}
+\end{equation}\\
+This value, however, is too large to store in a 16bit variable. To remedy this it was halved, requiring \begin{math}
+	\frac{103680}{2} = \SI{51840}{counts\per overflow}
+\end{math} and 2 overflows in a tenth of a second. Since \SI{51840}{counts} are needed per overflow, the starting value of the timer should be \begin{math}
+(2^{16}-1)-51840 = 13696
+\end{math}, or 0x3580 in hex.
+
+\subsubsection{Part 3}
 The code for section 3 had a different application than the previous two sections and was more hardware focused. In terms of software, all of port 1 had to be configured to be in open-drain mode (input), and all of port 2 to push-pull mode (output). This was done by setting all of the bits of the P1MDOUT special function register (SFR) low, and all of those of P2MDOUT high. This should be done in the 'PORT\_INIT()' function. In the main function, all that had to be done was read the value of port 1 into port 2. This could be done using the P1 and P2 port SFRs. 
 
 \subsection{Hardware}
@@ -64,7 +103,7 @@ By completing section one of the lab, a functioning C program was produced which
 
 \section{Conclusion}
 
-The end results of this lab ultimately matched with the initial goals however there were numerous instances where our system’s expected behavior did not correspond to its actual behavior. In order to properly produce the results that we needed for this lab, various hardware and software debugging techniques were utilized in order to verify the performance of each section of the lab. With some of these testing techniques, it was determined that the inputs to the 8051 utilize Schmitt triggers in order to prevent oscillating logic highs and logic lows. The use of Schmitt triggers makes the inputs of the 8051 more resilient to noise because they create separate thresholds for high and low values rather than having one shared boundary value. 
+The end results of this lab ultimately matched with the initial goals however there were numerous instances where our system’s expected behavior did not correspond to its actual behavior. In order to properly produce the results that we needed for this lab, various hardware and software debugging techniques were utilized in order to verify the performance of each section of the lab. With some of these testing techniques, it was determined that the inputs to the 8051 utilize Schmitt triggers in order to prevent oscillating logic highs and logic lows. The use of Schmitt triggers makes the inputs of the 8051 more resilient to noise because they create separate thresholds for high and low values rather thancontent... having one shared boundary value. 
 
 If more time was given to complete this lab assignment, additional conditional statements could be added to further enhance the responses of the ANSI terminal to user input. These statements could incorporate more escape sequences to display new error messages, to integrate hardware components to the error messages or to further manipulate the text formatting in the ANSI terminal. 
 
@@ -77,7 +116,7 @@ If more time was given to complete this lab assignment, additional conditional s
 	\subsubsection{Circuit Schematic}
 		\begin{figure}[h]
 			%\centering
-			\includegraphics{schematic1.png}
+			%\includegraphics{schematic1.png}
 			\caption{Circuit schematic for part 1}
 			\label{schematic}
 		\end{figure} 
@@ -94,7 +133,7 @@ If more time was given to complete this lab assignment, additional conditional s
 	\subsubsection{Circuit Schematic}
 		\begin{figure}[h]
 			%\centering
-			\includegraphics{schematic3.png}
+		%	\includegraphics{schematic3.png}
 			\caption{Circuit schematic for part 3}
 			\label{schematic}
 		\end{figure} 
