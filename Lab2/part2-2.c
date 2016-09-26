@@ -12,7 +12,6 @@
 #define EXTCLK      22118400    // External oscillator frequency in Hz
 #define SYSCLK      49766400    // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200      // UART baud rate in bps
-//#define BAUDRATE  19200       // UART baud rate in bps
 char timer0_flag = 0;
 //-------------------------------------------------------
 // Function PROTOTYPES
@@ -39,9 +38,6 @@ void main(void){
 	SYSCLK_INIT();
 	UART0_INIT();
 
-	SFRPAGE = LEGACY_PAGE;
-	IT0 = 1; 
-
 	printf("\033[2J");
 	printf("MPS Interrupt Switch Test \n\n\r");
 	printf("Ground /INT0 on P0.2 to generate an interrupt. \n\n\r");
@@ -53,7 +49,7 @@ void main(void){
 	
 
 	while(1){
-		if(timer0_flag == 2){
+		if(timer0_flag == 2){  // Wait for 2 overflows, print elapsed time and reset flag
 			tenths+=1;
 			printf("Elapsed Time: %u\n\r", tenths);
 			timer0_flag = 0;
@@ -64,7 +60,7 @@ void main(void){
 // Interrupts 
 //-------------------------------------
 
-void TIMER0_ISR(void) __interrupt 1{
+void TIMER0_ISR(void) __interrupt 1{  // reset timer to 0x3580 and increment flag
 	TH0 = 0x35;
 	TL0 = 0x80;
 	timer0_flag += 1;

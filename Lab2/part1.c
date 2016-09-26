@@ -107,7 +107,7 @@ void SYSCLK_INIT(void){
 	CLKSEL  = 0x01;             // SYSCLK derived from the External Oscillator circuit.
 	OSCICN  = 0x00;             // Disable the internal oscillator.
 	
-	SFRPAGE = CONFIG_PAGE;
+	SFRPAGE = CONFIG_PAGE;		// Configure PLL
 	PLL0CN  = 0x04;
 	SFRPAGE = LEGACY_PAGE;
 	FLSCL   = 0x10;

@@ -14,12 +14,9 @@
 #define EXTCLK      22118400    // External oscillator frequency in Hz
 #define SYSCLK      49766400    // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200      // UART baud rate in bps
-//#define BAUDRATE  19200       // UART baud rate in bps
 char timer0_flag = 0;
 __bit reactPress = 0;
-__bit resetPress = 0;
 char react_flag;
-//char reset_flag;
 
 //-------------------------------------------------------
 // Function PROTOTYPES
@@ -31,7 +28,6 @@ void UART0_INIT(void);
 void TIMER0_INIT(void);
 void TIMER0_ISR(void) __interrupt 1;
 void reactPress_ISR (void) __interrupt 0;
-//void resetPress_ISR (void) __interrupt 2;
 
 //------------------------------------------------------
 // Main Function 
@@ -52,7 +48,7 @@ void main(void){
 	UART0_INIT();
 
 	SFRPAGE = LEGACY_PAGE;
-	IT0 = 1; 
+	IT0 = 1;     // /INT0 triggered on negative falling edge
 	
 	// Display the set up information
 	printf("\033[2J");
@@ -126,7 +122,7 @@ void main(void){
 // Interrupts 
 //-------------------------------------
 
-void TIMER0_ISR(void) __interrupt 1{
+void TIMER0_ISR(void) __interrupt 1{  // reset timer to 0x3580 and increment flag
 	TH0 = 0x35;
 	TL0 = 0x80;
 	timer0_flag += 1;
@@ -184,7 +180,7 @@ void SYSCLK_INIT(void){
 	CLKSEL  = 0x01;             // SYSCLK derived from the External Oscillator circuit.
 	OSCICN  = 0x00;             // Disable the internal oscillator.
 	
-	SFRPAGE = CONFIG_PAGE;
+	SFRPAGE = CONFIG_PAGE;      // Configure PLL
 	PLL0CN  = 0x04;
 	SFRPAGE = LEGACY_PAGE;
 	FLSCL   = 0x10;
@@ -235,15 +231,15 @@ void TIMER0_INIT(void){
 
 	SFRPAGE = TIMER01_PAGE;	
 
-	TMOD &= 0xF0;
+	TMOD &= 0xF0;				// Timer0, Mode 1: 16-bit counter/timer.
 	TMOD |= 0x01;
-	TH0 = 0x35;
+	TH0 = 0x35;					// Set high byte such that timer0 starts at 0x3580
 	CKCON &= ~0x09;
-	CKCON |= 0x02;
-	TL0 = 0x80;
+	CKCON |= 0x02;				// Timer0 uses SYSCLK/48 as base
+	TL0 = 0x80;					// Set high byte such that timer0 starts at 0x3580
 
 	SFRPAGE = CONFIG_PAGE;
-	ET0 = 1;
+	ET0 = 1;					// Enable timer0 interrupt
 
 	SFRPAGE = SFRPAGE_SAVE;
 }

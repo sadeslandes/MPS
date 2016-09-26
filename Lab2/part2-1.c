@@ -50,7 +50,7 @@ void main(void){
 	
 	
 	while(1){
-		if(timer0_flag == 3){ // Wait for 3 overflows
+		if(timer0_flag == 3){ // Wait for 3 overflows, print elapsed time and reset flag
 			tenths+=1;        
 			printf_fastf("Elapsed Time: %.2f\n\r", tenths*0.1);
 			timer0_flag = 0;
@@ -62,7 +62,7 @@ void main(void){
 //-------------------------------------
 
 void TIMER0_ISR(void) __interrupt 1{
-	// Reset timer0 value
+	// Reset timer0 value and increment flag
 	TH0 = 0x00;
 	TL0 = 0x00;
 	timer0_flag += 1;
