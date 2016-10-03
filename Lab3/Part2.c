@@ -14,7 +14,8 @@
 #define SYSCLK      49766400    // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200      // UART baud rate in bps
 //#define BAUDRATE  19200       // UART baud rate in bps
-
+char CURR_PAGE;
+char exit_flag = 0;
 //-------------------------------------------------------
 // Function PROTOTYPES
 //-------------------------------------------------------
@@ -26,6 +27,9 @@ void UART1_INIT(void);
 void TIMER0_INIT(void);
 char checkSBUF(char CUR_PAGE);
 void echo(char character);
+void INTERRUPT_INIT(void);
+void UART0_int(void) __interrupt 4;
+void UART1_int(void) __interrupt 20;
 
 //------------------------------------------------------
 // Main Function 
@@ -43,6 +47,7 @@ void main(void){
     SYSCLK_INIT();                      // Initialize the oscillator
     UART0_INIT();                       // Initialize UART0
 	UART1_INIT();                       // Initialize UART1
+	INTERRUPT_INIT();
 
     SFRPAGE = UART1_PAGE;               // Direct output to UART1
 
@@ -56,57 +61,60 @@ void main(void){
     
     while(1)
     {
-		message = checkSBUF(SFRPAGE);
-		if(message == 27){ 
+		if(exit_flag){
 			printf("\n\n\rStopping now...");
 			SFRPAGE = UART1_PAGE;
 			printf("\n\n\rStopping now...");
-			for(i = 0;i<2000000;i++);
-			return;
+			for(i = 0;i<20000;i++);
+			break;
 		}
-		echo(message);
 	}
+	printf("broke");
+	return;
 }
-
-char checkSBUF(char CUR_PAGE){
-	char serial_dat0;
-	char serial_dat1;
-
-	while(1){
-		SFRPAGE = UART0_PAGE;
-		if(RI0){
-			serial_dat0 = SBUF0;
-			RI0 = 0;
-			SFRPAGE = CUR_PAGE;
-			return serial_dat0;
-		}
-		SFRPAGE = UART1_PAGE;
-		if(RI1){
-			serial_dat1 = SBUF1;
-			RI1 = 0;
-			SFRPAGE = CUR_PAGE;
-			return serial_dat1;
-		}
-	}	
-} 
 
 void echo(char character){
 	char SFRPAGE_SAVE;
 	SFRPAGE_SAVE = SFRPAGE;
-
+	
+	if(character == 27){
+		exit_flag = 1;
+		return;
+	}
+	
 	SFRPAGE = UART0_PAGE;             
 	SBUF0 = character;
-
+	TI0 = 0;
 	SFRPAGE = UART1_PAGE;
 	SBUF1 = character;	
-
+	TI1 = 0;
 	SFRPAGE = SFRPAGE_SAVE;
 }
 
 //-------------------------------------
 // Interrupts 
 //-------------------------------------
+void UART0_int(void) __interrupt 4{
+	CURR_PAGE = SFRPAGE;
+	SFRPAGE = UART0_PAGE;
+	if(RI0){
+		RI0 = 0;
+		echo(SBUF0);
+	}
+	ES0 = 0;
+	SFRPAGE = CURR_PAGE;
+}
 
+void UART1_int(void) __interrupt 20{
+	CURR_PAGE = SFRPAGE;
+	SFRPAGE = UART1_PAGE;
+	if(RI1){
+		RI1 = 0;
+		echo(SBUF1);
+	}
+	SFRPAGE = CURR_PAGE;
+	ES0 = 1;
+}
 
 
 //------------------------------------------------------
@@ -120,7 +128,6 @@ void PORT_INIT(void){
 	SFRPAGE_SAVE = SFRPAGE;     // Save Current SFR page.
 
 	SFRPAGE = CONFIG_PAGE;
-	EA      = 1;                // Enable interrupts as selected.
 	XBR0    = 0x04;             // Enable UART0.
 	XBR1    = 0x00;             // 
 	XBR2    = 0x44;             // Enable Crossbar and weak pull-ups and UART1.
@@ -168,9 +175,11 @@ void SYSCLK_INIT(void){
 	SFRPAGE = SFRPAGE_SAVE;     // Restore SFR page.
 }
 
-//-----------------------------------------------------
-// UART0_Init
-//-----------------------------------------------------
+void INTERRUPT_INIT(void){
+	EA  = 1;                // Enable interrupts as selected.
+	ES0 = 1;
+	EIE2 |= 0x40;
+}
 
 // Configure the UART0 using Timer1, for 9600 and 8-N-1.
 void UART0_INIT(void)
