@@ -24,6 +24,8 @@ void SYSCLK_INIT(void);
 void UART0_INIT(void);
 void UART1_INIT(void);
 void TIMER0_INIT(void);
+char checkSBUF(char CUR_PAGE);
+void echo(char character);
 
 //------------------------------------------------------
 // Main Function 
@@ -31,7 +33,8 @@ void TIMER0_INIT(void);
 
 void main(void){
 	// Declare local variables 
-	char choice;
+	char message;
+	unsigned long i;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
@@ -39,40 +42,69 @@ void main(void){
     PORT_INIT();                        // Initialize the Crossbar and GPIO
     SYSCLK_INIT();                      // Initialize the oscillator
     UART0_INIT();                       // Initialize UART0
+	UART1_INIT();                       // Initialize UART1
 
-    SFRPAGE = UART0_PAGE;               // Direct output to UART0
+    SFRPAGE = UART1_PAGE;               // Direct output to UART0
 
     printf("\033[2J");                  // Erase screen & move cursor to home position
-    printf("Test of the printf() function.\n\n");
+    printf("Test of the printf() function.\n\n\r");
+
+	SFRPAGE = UART0_PAGE;
+
+	printf("\033[2J");                  // Erase screen & move cursor to home position
+    printf("Test of the printf() function.\n\n\r");
     
     while(1)
     {
-        printf("Hello World!\n\n\r");
-        printf("( greetings from Russell P. Kraft )\n\n\n\r");
-        printf("1=repeat, 2=clear, 0=quit.\n\n\r"); // Menu of choices
-
-        choice = getchar();
-        putchar(choice);
-
-        // select which option to run    
-        P1 |= 0x40;                     // Turn green LED on
-        if (choice == '0')
-            return;
-        else if(choice == '1')
-            printf("\n\nHere we go again.\n\n\r");
-        else if(choice == '2')          // clear the screen with <ESC>[2J
-            printf("\033[2J");
-        else
-        {
-            // inform the user how bright he is
-            P1 &= 0xBF;                 // Turn green LED off
-            printf("\n\rA \"");
-            putchar(choice);
-            printf("\" is not a valid choice.\n\n\r");
-        }
-
-    }
+		//printf("start");
+  		message = checkSBUF(SFRPAGE);
+		if(message == 27){ 
+			printf("\n\n\rStopping now...");
+			SFRPAGE = UART1_PAGE;
+			printf("\n\n\rStopping now...");
+			for(i = 0;i<2000000;i++);
+			return;
+		}
+		echo(message);
+	}
 }
+
+char checkSBUF(char CUR_PAGE){
+	char serial_dat0;
+	char serial_dat1;
+
+	while(1){
+		SFRPAGE = UART0_PAGE;
+		if(RI0){
+			serial_dat0 = SBUF0;
+			SFRPAGE = CUR_PAGE;
+			RI0 = 0;
+			return serial_dat0;
+		}
+		SFRPAGE = UART1_PAGE;
+		if(RI1){
+			printf("input recorded");
+			serial_dat1 = SBUF1;
+			SFRPAGE = CUR_PAGE;
+			RI1 = 0;
+			return serial_dat1;
+		}
+	}	
+} 
+
+void echo(char character){
+	char SFRPAGE_SAVE;
+	SFRPAGE_SAVE = SFRPAGE;
+
+	SFRPAGE = UART0_PAGE;             
+	SBUF0 = character;
+
+	SFRPAGE = UART1_PAGE;
+	SBUF1 = character;	
+
+	SFRPAGE = SFRPAGE_SAVE;
+}
+
 //-------------------------------------
 // Interrupts 
 //-------------------------------------
@@ -94,7 +126,7 @@ void PORT_INIT(void){
 	XBR0    = 0x04;             // Enable UART0.
 	XBR1    = 0x00;             // 
 	XBR2    = 0x44;             // Enable Crossbar and weak pull-ups and UART1.
-	P0MDOUT = 0x05;             // P0.0 (TX0) and P0.2 (TX1) are configured as Push-Pull for output
+	P0MDOUT = 0x05;             // P0.0 (TX0) and P0.2 (TX1) are configured as Push-Pull for output, P0.1 (RX0) and P0.3 (RX1) are Open-drain
 	P0      = 0x0A;             // Additionally, set P0.0=0, P0.1=1, P0.2=0, P0.3=1
 	
 	SFRPAGE = SFRPAGE_SAVE;     // Restore SFR page.
@@ -142,31 +174,9 @@ void SYSCLK_INIT(void){
 // UART0_Init
 //-----------------------------------------------------
 
-// Configure the UART0 using Timer1, for <baudrate> and 8-N-1.
-
-void UART1_INIT(void)
+// Configure the UART0 using Timer1, for 9600 and 8-N-1.
+void UART0_INIT(void)
 {
-    char SFRPAGE_SAVE;
-
-    SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
-
-    SFRPAGE = TIMER01_PAGE;
-    TMOD   &= ~0xF0;
-    TMOD   |=  0x20;                    // Timer1, Mode 2, 8-bit reload
-    TH1     = -(SYSCLK/BAUDRATE/16);    // Set Timer1 reload baudrate value T1 Hi Byte
-    CKCON  |= 0x10;                     // Timer1 uses SYSCLK as time base
-    TL1     = TH1;
-    TR1     = 1;                        // Start Timer1
-
-    SFRPAGE = UART1_PAGE;
-    SCON1   = 0x10;                     // Mode 1, 8-bit UART, enable RX
-    //SSTA0   = 0x10;                     // S1MODE = 1
-    //TI0     = 1;                        // Indicate TX0 ready
-
-    SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
-}
-
-void UART0_INIT(void){
 	char SFRPAGE_SAVE;
 	
 	SFRPAGE_SAVE = SFRPAGE;     // Save Current SFR page.
@@ -175,7 +185,7 @@ void UART0_INIT(void){
     TMR2CN  = 0x00;             // Auto-reload mode, use clock defined in TMR2CF,  
 	TMR2CF  = 0x08;				// Timer 2 uses SYSCLK as time base
 
-	RCAP2H  = 0xFE;             // Set timer 2 auto-reload value for BAUDRATE
+	RCAP2H  = 0xFE;             // Set timer 2 auto-reload value for 9600bps
 	RCAP2L  = 0xBC;
 
 	TR2 = 1;					// Start timer 2
@@ -189,23 +199,24 @@ void UART0_INIT(void){
 }
 
 
+// Configure the UART1 using Timer1, for 115200 and 8-N-1.
+void UART1_INIT(void)
+{
+    char SFRPAGE_SAVE;
 
-// Timer init
-void TIMER0_INIT(void){
-	char SFRPAGE_SAVE;
-	SFRPAGE_SAVE = SFRPAGE;
+    SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
-	SFRPAGE = TIMER01_PAGE;	
-
-	TMOD &= 0xF0;
-	TMOD |= 0x01;
-	TH0 = 0x35;
-	CKCON &= ~0x09;
-	CKCON |= 0x02;
-	TL0 = 0x80;
-
-	SFRPAGE = CONFIG_PAGE;
-	ET0 = 1;
-
-	SFRPAGE = SFRPAGE_SAVE;
+    SFRPAGE = TIMER01_PAGE;
+    TMOD   &= ~0xF0;
+    TMOD   |=  0x20;                    // Timer1, Mode 2, 8-bit reload
+    TH1 	= 40;						// Set Timer1 reload baudrate value T1 Hi Byte
+	CKCON  |= 0x10;                     // Timer1 uses SYSCLK as time base
+    TL1     = TH1;
+    TR1     = 1;                        // Start Timer1
+	
+	SFRPAGE = UART1_PAGE;
+    SCON1   = 0x10;                     // Mode 1, 8-bit UART, enable RX
+    TI1     = 1;                        // Indicate TX1 ready
+	
+	SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
 }
