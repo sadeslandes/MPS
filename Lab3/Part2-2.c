@@ -84,10 +84,10 @@ void echo(char character){
 	
 	SFRPAGE = UART0_PAGE;             
 	SBUF0 = character;
-	TI0 = 0;
+	TI0 = 0;		// Why
 	SFRPAGE = UART1_PAGE;
 	SBUF1 = character;	
-	TI1 = 0;
+	TI1 = 0;		// Why
 	SFRPAGE = SFRPAGE_SAVE;
 }
 
@@ -98,11 +98,13 @@ void UART0_int(void) __interrupt 4{
 	CURR_PAGE = SFRPAGE;
 	SFRPAGE = UART0_PAGE;
 	if(RI0){
+		//while(!TI0);
 		echo(SBUF0);
+		//ES0 = 0;
 		RI0 = 0;
+		//EIE2 = 0x40;
 	}
 	ES0 = 0;
-	//TI0 = 0;
 	SFRPAGE = CURR_PAGE;
 }
 
@@ -110,12 +112,13 @@ void UART1_int(void) __interrupt 20{
 	CURR_PAGE = SFRPAGE;
 	SFRPAGE = UART1_PAGE;
 	if(RI1){
+		//while(!TI1);
 		echo(SBUF1);
+		//EIE2 = 0;   //If uncomment this, comment out line 120
 		RI1 = 0;		
 	}
 	SFRPAGE = CURR_PAGE;
 	ES0 = 1;
-	//TI1 = 0;
 }
 
 
