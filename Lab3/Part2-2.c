@@ -114,7 +114,7 @@ void UART1_int(void) __interrupt 20{
 	if(RI1){
 		//while(!TI1);
 		echo(SBUF1);
-		//EIE2 = 0;   //If uncomment this, comment out line 120
+		//EIE2 = 0;   //If uncomment this, comment out line 121
 		RI1 = 0;		
 	}
 	SFRPAGE = CURR_PAGE;

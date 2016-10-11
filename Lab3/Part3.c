@@ -1,13 +1,4 @@
-//------------------------------------------------------------------------------------
-// Hello.c
-//------------------------------------------------------------------------------------
-//8051 Test program to demonstrate serial port I/O.  This program writes a message on
-//the console using the printf() function, and reads characters using the getchar()
-//function.  An ANSI escape sequence is used to clear the screen if a '2' is typed. 
-//A '1' repeats the message and the program responds to other input characters with
-//an appropriate message.
-//
-//Any valid keystroke turns on the green LED on the board; invalid entries turn it off
+
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
@@ -21,7 +12,7 @@
 #define EXTCLK      22118400            // External oscillator frequency in Hz
 #define SYSCLK      49766400            // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200              // UART baud rate in bps
-
+//char choice;
 //------------------------------------------------------------------------------------
 // Function Prototypes
 //------------------------------------------------------------------------------------
@@ -36,45 +27,46 @@ void UART0_INIT(void);
 void main(void)
 {
     char choice;
+	char i;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
 
-    PORT_INIT();                        // Initialize the Crossbar and GPIO
     SYSCLK_INIT();                      // Initialize the oscillator
-    UART0_INIT();                       // Initialize UART0
-
-    SFRPAGE = UART0_PAGE;               // Direct output to UART0
-
-    printf("\033[2J");                  // Erase screen & move cursor to home position
-    printf("Test of the printf() function.\n\n");
+	PORT_INIT();                        // Initialize the Crossbar and GPIO
     
-    while(1)
+	UART0_INIT();
+
+	SFRPAGE = UART0_PAGE;    
+
+	printf("\033[2J");                  // Erase screen & move cursor to home position
+    printf("Test of the printf() function.\n\n\r");
+
+	while(1)
     {
-        printf("Hello World!\n\n\r");
-        printf("( greetings from Russell P. Kraft )\n\n\n\r");
-        printf("1=repeat, 2=clear, 0=quit.\n\n\r"); // Menu of choices
-
-        choice = getchar();
-        putchar(choice);
-
-        // select which option to run    
-        P1 |= 0x40;                     // Turn green LED on
-        if (choice == '0')
-            return;
-        else if(choice == '1')
-            printf("\n\nHere we go again.\n\n\r");
-        else if(choice == '2')          // clear the screen with <ESC>[2J
-            printf("\033[2J");
-        else
-        {
-            // inform the user how bright he is
-            P1 &= 0xBF;                 // Turn green LED off
-            printf("\n\rA \"");
-            putchar(choice);
-            printf("\" is not a valid choice.\n\n\r");
-        }
-
+		while(SPI0CFG > 127);											// Ground NSS (P0.5)
+		P0 &= ~0x20; 
+		
+    	//while(!SPIF);
+		
+		SPIF = 0;
+		//Transmit
+		printf("waiting for input\n\r");
+		choice = getchar();
+		SPI0DAT = choice;
+		while(!SPIF);
+		printf("Choice is: %c\n\r",choice);
+		
+		//while(SPI0CFG > 127);
+		
+		//Receive
+		P0 |= 0x20; 											// Release slave
+		for(i=0;i<100;i++);									// Wait a bit
+		SPI0DAT = 0xFF;											// Dummy byte
+		while(!SPIF);   											// Check if SPI is busy
+		SPIF = 0; 												// Clear SPIF flag
+		printf("Data read from SPI0DAT is: %c\n\n\r",SPI0DAT);  // Read SPI0DAT
+		   
     }
 }
 
@@ -127,26 +119,29 @@ void PORT_INIT(void)
 
     SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
-    SFRPAGE  = CONFIG_PAGE;
-    XBR0     = 0x02;                    // Enable SPI
+    
+	SFRPAGE = CONFIG_PAGE;
+
+	XBR0     = 0x06;                    // Enable UART0,SPI
     XBR1     = 0x00;
     XBR2     = 0x40;                    // Enable Crossbar and weak pull-up
-    P0MDOUT |= 0x01;                    // Set TX0 on P0.0 pin to push-pull
-    
-	SPI0CN   = 0x01;					// Enable SPI
-	SPI0CKRH = 	108;					// SPI clock rate for 230399
-	SPI0CFG  = 0x40;					// Master mode
 
-    SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
+	P0MDOUT |= 0x35;                    // Set pins 0,2,4,5 to push-pull
+    P0 		|= 0x0A;                    // RX0 pin to high impedance
+	
+	SFRPAGE  = SPI0_PAGE;
+    
+	SPI0CN   = 0x0D;					// Enable SPI
+	SPI0CKR  = 	108;					// SPI clock rate for 230399
+	//SPI0CKR  = 19;                      // 1.244 MHz
+	SPI0CFG |= 0x40;					// Master mode
+	SPIF = 1;	
+
+	
+	SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
 }
 
-//------------------------------------------------------------------------------------
-// UART0_Init
-//------------------------------------------------------------------------------------
-//
-// Configure the UART0 using Timer1, for <baudrate> and 8-N-1
-//
-void SPI_INIT(void)
+void UART0_INIT(void)
 {
     char SFRPAGE_SAVE;
 
