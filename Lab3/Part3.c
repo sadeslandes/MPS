@@ -12,7 +12,8 @@
 #define EXTCLK      22118400            // External oscillator frequency in Hz
 #define SYSCLK      49766400            // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200              // UART baud rate in bps
-//char choice;
+char choice;
+char in_flag = 0;
 //------------------------------------------------------------------------------------
 // Function Prototypes
 //------------------------------------------------------------------------------------
@@ -20,54 +21,89 @@ void main(void);
 void SYSCLK_INIT(void);
 void PORT_INIT(void);
 void UART0_INIT(void);
+void SPI0_READ(void);
+void SPI0_WRITE(void);
+void UART0_int(void) __interrupt 4;
 
 //------------------------------------------------------------------------------------
 // MAIN Routine
 //------------------------------------------------------------------------------------
 void main(void)
 {
-    char choice;
 	char i;
+	char top_pos = 2;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
 
     SYSCLK_INIT();                      // Initialize the oscillator
-	PORT_INIT();                        // Initialize the Crossbar and GPIO
-    
+	PORT_INIT();
 	UART0_INIT();
+	//PORT_INIT();                        // Initialize the Crossbar and GPIO
+    
+	
 
 	SFRPAGE = UART0_PAGE;    
-
+	
 	printf("\033[2J");                  // Erase screen & move cursor to home position
-    printf("Test of the printf() function.\n\n\r");
-
+	printf("Local char typed");
+	printf("\033[13;0H");
+	printf("Received char\n\r");              // jump down type
+	printf("\033[s"); 									// save position
+	printf("\033[2;0H");									// jump back up
 	while(1)
     {
-		while(SPI0CFG > 127);											// Ground NSS (P0.5)
-		P0 &= ~0x20; 
-		
-    	//while(!SPIF);
-		
-		SPIF = 0;
+		//printf("ENTERED LOOP\r\n");
+		SFRPAGE = UART0_PAGE;  
 		//Transmit
-		printf("waiting for input\n\r");
-		choice = getchar();
-		SPI0DAT = choice;
-		while(!SPIF);
-		printf("Choice is: %c\n\r",choice);
+		if(RI0){
+			printf("RI0 = %d\r\n",RI0);
+			RI0 = 0;
+			//choice = getchar();
+			SFRPAGE = SPI0_PAGE;
+			choice = SPI0DAT;
+			SPIF = 0;
+			NSSMD0 = 0;
+			printf("test");
+			while(SPI0CFG & 0x80);
+			SPIF = 0;
+			SPI0DAT = choice;
+			for(i=0;i<100;i++);	
+			while(!SPIF);	
+			SPIF = 0;										// Wait for transfer to be completed
+			printf("Choice is: %c\n\r",choice);
+			top_pos += 1;
 		
-		//while(SPI0CFG > 127);
-		
-		//Receive
-		P0 |= 0x20; 											// Release slave
-		for(i=0;i<100;i++);									// Wait a bit
-		SPI0DAT = 0xFF;											// Dummy byte
-		while(!SPIF);   											// Check if SPI is busy
-		SPIF = 0; 												// Clear SPIF flag
-		printf("Data read from SPI0DAT is: %c\n\n\r",SPI0DAT);  // Read SPI0DAT
-		   
+			//Receive
+
+			NSSMD0 = 1;
+			for(i=0;i<100;i++);	
+			printf("\033[u"); // restore cursor	
+			printf("Data read from SPI0DAT is: %c\n\r",SPI0DAT);
+			printf("\033[s");
+			printf("\033[%c;0H",top_pos);
+
+			SPIF = 0;
+			//in_flag = 0;
+			//RI0 = 0;
+		}
     }
+}
+
+void SPI0_READ(void){
+	
+}
+
+void SPI0_WRITE(void){
+
+}
+
+void UART0_int(void) __interrupt 4{
+	if(RI0){
+		choice = SBUF0;
+		RI0 = 0;
+		in_flag = 1;
+	}
 }
 
 //------------------------------------------------------------------------------------
@@ -125,17 +161,22 @@ void PORT_INIT(void)
 	XBR0     = 0x06;                    // Enable UART0,SPI
     XBR1     = 0x00;
     XBR2     = 0x40;                    // Enable Crossbar and weak pull-up
-
+	
+	P0MDOUT &= ~0x02; //~0x0A
 	P0MDOUT |= 0x35;                    // Set pins 0,2,4,5 to push-pull
-    P0 		|= 0x0A;                    // RX0 pin to high impedance
+    //P0      |= 0x02;                    // RX0 pin and to high impedance
 	
 	SFRPAGE  = SPI0_PAGE;
-    
-	SPI0CN   = 0x0D;					// Enable SPI
-	SPI0CKR  = 	108;					// SPI clock rate for 230399
-	//SPI0CKR  = 19;                      // 1.244 MHz
-	SPI0CFG |= 0x40;					// Master mode
-	SPIF = 1;	
+    SPI0CFG = 0x40;						// Master mode
+	SPI0CN  = 0x0D;					// Enable SPI
+	SPI0CKR  = 	0x18;					// SPI clock rate for 230399
+	//SPI0CKR  = 19;                    // 1.244 MHz
+	
+	//SPIF = 1;	
+	
+	//EIE1 = 0x01;
+	EA = 1;
+	//ES0 = 1;
 
 	
 	SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
@@ -157,7 +198,7 @@ void UART0_INIT(void)
 
     SFRPAGE = UART0_PAGE;
     SCON0   = 0x50;                     // Mode 1, 8-bit UART, enable RX
-    SSTA0   = 0x10;                     // SMOD0 = 1
+    SSTA0   = 0x10;         		    // SMOD0 = 1
     TI0     = 1;                        // Indicate TX0 ready
 
     SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
