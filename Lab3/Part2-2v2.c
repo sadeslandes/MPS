@@ -16,6 +16,9 @@
 //#define BAUDRATE  19200       // UART baud rate in bps
 char CURR_PAGE;
 char exit_flag = 0;
+char UART0_flag = 0;
+char UART1_flag = 0;
+char choice = 0;
 //-------------------------------------------------------
 // Function PROTOTYPES
 //-------------------------------------------------------
@@ -39,6 +42,7 @@ void main(void){
 	// Declare local variables 
 	char message;
 	unsigned long i;
+	char j;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
@@ -49,18 +53,14 @@ void main(void){
 	UART1_INIT();                       // Initialize UART1
 	INTERRUPT_INIT();
 
-    SFRPAGE = UART1_PAGE;               // Direct output to UART1
-
-    printf("\033[2J");                  // Erase screen & move cursor to home position
-    printf("Test of the printf() function.\n\n\r");
-
-	SFRPAGE = UART0_PAGE;				// Direct output to UART1
+    SFRPAGE = UART0_PAGE;				// Direct output to UART1
 
 	printf("\033[2J");                  // Erase screen & move cursor to home position
     printf("Test of the printf() function.\n\n\r");
     
     while(1)
     {
+		SFRPAGE = UART0_PAGE;
 		if(exit_flag){
 			printf("\n\n\rStopping now...");
 			SFRPAGE = UART1_PAGE;
@@ -68,27 +68,40 @@ void main(void){
 			for(i = 0;i<20000;i++);
 			break;
 		}
+		
+		for(j=0;j<255;j++){
+			ES0 = 0;
+		}
+		ES0 = 1;
+		
+		if(UART0_flag){
+			//printf("triggered");
+			echo(choice);
+			UART0_flag = 0;
+		}
+		if(UART1_flag){
+			//printf("triggered");
+			ES0 = 0;
+			SBUF0 = choice;
+			ES0 = 1;
+			UART1_flag = 0;
+		}
+		
 	}
-	printf("broke");
 	return;
 }
 
 void echo(char character){
-	char SFRPAGE_SAVE;
-	SFRPAGE_SAVE = SFRPAGE;
-	
 	if(character == 27){
 		exit_flag = 1;
 		return;
 	}
-	
+	ES0 = 0;
 	SFRPAGE = UART0_PAGE;             
 	SBUF0 = character;
-	TI0 = 0;		
+	
 	SFRPAGE = UART1_PAGE;
-	SBUF1 = character;	
-	TI1 = 0;		
-	SFRPAGE = SFRPAGE_SAVE;
+	SBUF1 = character;
 }
 
 //-------------------------------------
@@ -98,13 +111,10 @@ void UART0_int(void) __interrupt 4{
 	CURR_PAGE = SFRPAGE;
 	SFRPAGE = UART0_PAGE;
 	if(RI0){
-		//while(!TI0);
-		echo(SBUF0);
-		//ES0 = 0;
 		RI0 = 0;
-		//EIE2 = 0x40;
+		choice = SBUF0;
+		UART0_flag = 1;
 	}
-	ES0 = 0;
 	SFRPAGE = CURR_PAGE;
 }
 
@@ -112,13 +122,12 @@ void UART1_int(void) __interrupt 20{
 	CURR_PAGE = SFRPAGE;
 	SFRPAGE = UART1_PAGE;
 	if(RI1){
-		//while(!TI1);
-		echo(SBUF1);
-		//EIE2 = 0;  
-		RI1 = 0;		
+		RI1 = 0;
+		choice = SBUF1;
+		UART1_flag = 1;
 	}
-	SFRPAGE = CURR_PAGE;
 	ES0 = 1;
+	SFRPAGE = CURR_PAGE;
 }
 
 
@@ -137,7 +146,7 @@ void PORT_INIT(void){
 	XBR1    = 0x00;             // 
 	XBR2    = 0x44;             // Enable Crossbar and weak pull-ups and UART1.
 	P0MDOUT = 0x05;             // P0.0 (TX0) and P0.2 (TX1) are configured as Push-Pull for output, P0.1 (RX0) and P0.3 (RX1) are Open-drain
-	P0      = ~0x05;             // Additionally, set P0.0=0, P0.1=1, P0.2=0, P0.3=1
+	P0      = 0x0A;             // Additionally, set P0.0=0, P0.1=1, P0.2=0, P0.3=1
 	
 	SFRPAGE = SFRPAGE_SAVE;     // Restore SFR page.
 	

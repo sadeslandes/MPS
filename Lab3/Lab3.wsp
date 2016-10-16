@@ -53,7 +53,7 @@ ptn_Child51=BankMap
 ptn_Child52=Folders
 ptn_Child53=CygnalCloseFileFlag
 [WorkState_v1_1.DockState]
-Bars=70
+Bars=69
 ScreenCX=1600
 ScreenCY=900
 ptn_Child1=Bar-0
@@ -125,7 +125,6 @@ ptn_Child66=Bar-65
 ptn_Child67=Bar-66
 ptn_Child68=Bar-67
 ptn_Child69=Bar-68
-ptn_Child70=Bar-69
 [WorkState_v1_1.DockState.Bar-0]
 BarID=59393
 Style=32768
@@ -147,7 +146,7 @@ WindowName=Ready
 ResourceID=0
 [WorkState_v1_1.DockState.Bar-1]
 BarID=59419
-Bars=11
+Bars=13
 Bar#0=0
 Bar#1=59647
 Bar#2=0
@@ -159,6 +158,8 @@ Bar#7=59400
 Bar#8=59397
 Bar#9=59402
 Bar#10=0
+Bar#11=59140
+Bar#12=0
 Style=0
 ExStyle=0
 PrevFloating=False
@@ -200,31 +201,8 @@ ClassName=
 WindowName=
 ResourceID=0
 [WorkState_v1_1.DockState.Bar-3]
-BarID=59420
-Bars=3
-Bar#0=0
-Bar#1=59140
-Bar#2=0
-Style=0
-ExStyle=0
-PrevFloating=False
-MDIChild=False
-PctWidth=0
-MRUFloatCX=0
-MRUFloatCY=0
-MRUHorzDockCX=0
-MRUHorzDockCY=0
-MRUVertDockCX=0
-MRUVertDockCY=0
-MRUDockingState=0
-DockingStyle=0
-TypeID=0
-ClassName=
-WindowName=
-ResourceID=0
-[WorkState_v1_1.DockState.Bar-4]
 BarID=59421
-Bars=137
+Bars=153
 Bar#0=0
 Bar#1=284
 Bar#2=283
@@ -322,46 +300,62 @@ Bar#93=0
 Bar#94=0
 Bar#95=0
 Bar#96=0
-Bar#97=62088
-Bar#98=62083
-Bar#99=62077
-Bar#100=62089
-Bar#101=62063
-Bar#102=62062
-Bar#103=62007
-Bar#104=61891
-Bar#105=61905
-Bar#106=62014
-Bar#107=61939
-Bar#108=61956
-Bar#109=61875
-Bar#110=61871
-Bar#111=33295
-Bar#112=33294
-Bar#113=268
-Bar#114=267
-Bar#115=33247
-Bar#116=33246
-Bar#117=266
-Bar#118=265
-Bar#119=264
-Bar#120=263
-Bar#121=262
-Bar#122=261
-Bar#123=260
-Bar#124=259
-Bar#125=258
-Bar#126=257
-Bar#127=256
-Bar#128=33239
-Bar#129=33240
-Bar#130=33238
-Bar#131=33241
-Bar#132=33237
-Bar#133=33236
-Bar#134=59403
-Bar#135=59141
-Bar#136=0
+Bar#97=0
+Bar#98=0
+Bar#99=0
+Bar#100=0
+Bar#101=0
+Bar#102=0
+Bar#103=0
+Bar#104=0
+Bar#105=0
+Bar#106=0
+Bar#107=0
+Bar#108=0
+Bar#109=0
+Bar#110=0
+Bar#111=0
+Bar#112=0
+Bar#113=62088
+Bar#114=62083
+Bar#115=62077
+Bar#116=62089
+Bar#117=62063
+Bar#118=62062
+Bar#119=62007
+Bar#120=61891
+Bar#121=61905
+Bar#122=62014
+Bar#123=61939
+Bar#124=61956
+Bar#125=61875
+Bar#126=61871
+Bar#127=33295
+Bar#128=33294
+Bar#129=268
+Bar#130=267
+Bar#131=33247
+Bar#132=33246
+Bar#133=266
+Bar#134=265
+Bar#135=264
+Bar#136=263
+Bar#137=262
+Bar#138=261
+Bar#139=260
+Bar#140=259
+Bar#141=258
+Bar#142=257
+Bar#143=256
+Bar#144=33239
+Bar#145=33240
+Bar#146=33238
+Bar#147=33241
+Bar#148=33237
+Bar#149=33236
+Bar#150=59403
+Bar#151=59141
+Bar#152=0
 Style=0
 ExStyle=0
 PrevFloating=False
@@ -379,7 +373,7 @@ TypeID=0
 ClassName=
 WindowName=
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-5]
+[WorkState_v1_1.DockState.Bar-4]
 BarID=59139
 XPos=1
 YPos=5
@@ -409,7 +403,7 @@ TypeID=0
 ClassName=OutputControlBar
 WindowName=Output Window
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-6]
+[WorkState_v1_1.DockState.Bar-5]
 BarID=59141
 Visible=False
 XPos=0
@@ -440,7 +434,7 @@ TypeID=0
 ClassName=WatchControlBar
 WindowName=Watch Window
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-7]
+[WorkState_v1_1.DockState.Bar-6]
 BarID=59403
 Visible=False
 XPos=0
@@ -471,7 +465,7 @@ TypeID=0
 ClassName=CExternalRegViewWnd
 WindowName=External Register Window
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-8]
+[WorkState_v1_1.DockState.Bar-7]
 BarID=33236
 Visible=False
 XPos=0
@@ -502,7 +496,7 @@ TypeID=0
 ClassName=CExternalRegViewWnd
 WindowName=External Register Window
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-9]
+[WorkState_v1_1.DockState.Bar-8]
 BarID=33237
 Visible=False
 XPos=0
@@ -533,7 +527,7 @@ TypeID=0
 ClassName=CExternalRegViewWnd
 WindowName=External Register Window
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-10]
+[WorkState_v1_1.DockState.Bar-9]
 BarID=33241
 Visible=False
 XPos=0
@@ -564,7 +558,7 @@ TypeID=0
 ClassName=CExternalRegViewWnd
 WindowName=Indirect MAC Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-11]
+[WorkState_v1_1.DockState.Bar-10]
 BarID=33238
 Visible=False
 XPos=0
@@ -595,7 +589,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=2200 Flash
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-12]
+[WorkState_v1_1.DockState.Bar-11]
 BarID=33240
 Visible=False
 XPos=0
@@ -626,7 +620,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=2200 RX Buffer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-13]
+[WorkState_v1_1.DockState.Bar-12]
 BarID=33239
 Visible=False
 XPos=0
@@ -657,7 +651,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=2200 TX Buffer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-14]
+[WorkState_v1_1.DockState.Bar-13]
 BarID=256
 Visible=False
 XPos=0
@@ -688,7 +682,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=DSP Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-15]
+[WorkState_v1_1.DockState.Bar-14]
 BarID=257
 Visible=False
 XPos=0
@@ -719,7 +713,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=R Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-16]
+[WorkState_v1_1.DockState.Bar-15]
 BarID=258
 Visible=False
 XPos=0
@@ -750,7 +744,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=P Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-17]
+[WorkState_v1_1.DockState.Bar-16]
 BarID=259
 Visible=False
 XPos=0
@@ -781,7 +775,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=M Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-18]
+[WorkState_v1_1.DockState.Bar-17]
 BarID=260
 Visible=False
 XPos=0
@@ -812,7 +806,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=N Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-19]
+[WorkState_v1_1.DockState.Bar-18]
 BarID=261
 Visible=False
 XPos=0
@@ -843,7 +837,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=A Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-20]
+[WorkState_v1_1.DockState.Bar-19]
 BarID=262
 Visible=False
 XPos=0
@@ -874,7 +868,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=BP Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-21]
+[WorkState_v1_1.DockState.Bar-20]
 BarID=263
 Visible=False
 XPos=0
@@ -905,7 +899,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=DSS Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-22]
+[WorkState_v1_1.DockState.Bar-21]
 BarID=264
 Visible=False
 XPos=0
@@ -936,7 +930,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Cordic Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-23]
+[WorkState_v1_1.DockState.Bar-22]
 BarID=265
 Visible=False
 XPos=0
@@ -967,7 +961,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=HWTXA Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-24]
+[WorkState_v1_1.DockState.Bar-23]
 BarID=266
 Visible=False
 XPos=0
@@ -998,7 +992,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=ADC Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-25]
+[WorkState_v1_1.DockState.Bar-24]
 BarID=33246
 Visible=False
 XPos=0
@@ -1029,7 +1023,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=8100 XMEM
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-26]
+[WorkState_v1_1.DockState.Bar-25]
 BarID=33247
 Visible=False
 XPos=0
@@ -1060,7 +1054,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=8100 YMEM
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-27]
+[WorkState_v1_1.DockState.Bar-26]
 BarID=267
 Visible=False
 XPos=0
@@ -1091,7 +1085,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=XREG Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-28]
+[WorkState_v1_1.DockState.Bar-27]
 BarID=268
 Visible=False
 XPos=0
@@ -1122,7 +1116,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=System Variables
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-29]
+[WorkState_v1_1.DockState.Bar-28]
 BarID=33294
 Visible=False
 XPos=0
@@ -1153,7 +1147,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=abMTP_RDATA
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-30]
+[WorkState_v1_1.DockState.Bar-29]
 BarID=33295
 Visible=False
 XPos=0
@@ -1184,28 +1178,29 @@ TypeID=0
 ClassName=MemWnd
 WindowName=abXREG_NVM_PACK
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-31]
+[WorkState_v1_1.DockState.Bar-30]
 BarID=59140
-XPos=0
-YPos=-2
+Visible=False
+XPos=1
+YPos=60
 Docking=True
-MRUDockID=0
-MRUDockLeftPos=0
-MRUDockTopPos=-2
-MRUDockRightPos=158
-MRUDockBottomPos=622
+MRUDockID=59419
+MRUDockLeftPos=1
+MRUDockTopPos=60
+MRUDockRightPos=1600
+MRUDockBottomPos=257
 MRUFloatStyle=4
 MRUFloatXPos=-2147483648
 MRUFloatYPos=0
-Style=8084
+Style=12180
 ExStyle=3857
 PrevFloating=False
 MDIChild=False
 PctWidth=1000000
 MRUFloatCX=300
 MRUFloatCY=180
-MRUHorzDockCX=300
-MRUHorzDockCY=180
+MRUHorzDockCX=1599
+MRUHorzDockCY=197
 MRUVertDockCX=158
 MRUVertDockCY=624
 MRUDockingState=0
@@ -1214,7 +1209,7 @@ TypeID=0
 ClassName=ProjectWorkspaceWnd
 WindowName=Project Workspace
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-32]
+[WorkState_v1_1.DockState.Bar-31]
 BarID=61871
 Visible=False
 XPos=0
@@ -1245,7 +1240,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=Memory Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-33]
+[WorkState_v1_1.DockState.Bar-32]
 BarID=61875
 Visible=False
 XPos=0
@@ -1276,7 +1271,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=Ram Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-34]
+[WorkState_v1_1.DockState.Bar-33]
 BarID=61956
 Visible=False
 XPos=0
@@ -1307,7 +1302,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=External Ram Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-35]
+[WorkState_v1_1.DockState.Bar-34]
 BarID=61939
 Visible=False
 XPos=0
@@ -1338,7 +1333,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=Private Ram Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-36]
+[WorkState_v1_1.DockState.Bar-35]
 BarID=62014
 Visible=False
 XPos=0
@@ -1369,7 +1364,7 @@ TypeID=0
 ClassName=MemWnd
 WindowName=Scratch Pad Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-37]
+[WorkState_v1_1.DockState.Bar-36]
 BarID=61905
 XPos=5
 YPos=-2
@@ -1399,7 +1394,7 @@ TypeID=0
 ClassName=DissMemWnd
 WindowName=Disassembly Window
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-38]
+[WorkState_v1_1.DockState.Bar-37]
 BarID=61891
 Visible=False
 XPos=0
@@ -1430,7 +1425,7 @@ TypeID=0
 ClassName=StackRegWnd
 WindowName=Stack Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-39]
+[WorkState_v1_1.DockState.Bar-38]
 BarID=62007
 Visible=False
 XPos=0
@@ -1461,7 +1456,7 @@ TypeID=0
 ClassName=RnRegWnd
 WindowName=Register Viewer
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-40]
+[WorkState_v1_1.DockState.Bar-39]
 BarID=62062
 Visible=False
 XPos=0
@@ -1492,7 +1487,7 @@ TypeID=0
 ClassName=CANRegWnd
 WindowName=CAN SFR's
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-41]
+[WorkState_v1_1.DockState.Bar-40]
 BarID=62063
 Visible=False
 XPos=0
@@ -1523,7 +1518,7 @@ TypeID=0
 ClassName=CANMsgRegWnd
 WindowName=CAN Message Registers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-42]
+[WorkState_v1_1.DockState.Bar-41]
 BarID=62089
 Visible=False
 XPos=0
@@ -1554,7 +1549,7 @@ TypeID=0
 ClassName=TracRecWnd
 WindowName=Trace Record
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-43]
+[WorkState_v1_1.DockState.Bar-42]
 BarID=62077
 Visible=False
 XPos=0
@@ -1585,7 +1580,7 @@ TypeID=0
 ClassName=DMA0InstrWnd
 WindowName=DMA0 Instruction RAM
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-44]
+[WorkState_v1_1.DockState.Bar-43]
 BarID=62083
 Visible=False
 XPos=0
@@ -1616,7 +1611,7 @@ TypeID=0
 ClassName=ADC0CptWnd
 WindowName=ADC Calibration
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-45]
+[WorkState_v1_1.DockState.Bar-44]
 BarID=62088
 Visible=False
 XPos=0
@@ -1647,7 +1642,7 @@ TypeID=0
 ClassName=Cache0DataWnd
 WindowName=Cache Data
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-46]
+[WorkState_v1_1.DockState.Bar-45]
 BarID=59647
 MRUWidth=504
 Docking=True
@@ -1677,10 +1672,10 @@ ClassName=SECMDIMenuBar
 WindowName=Menu bar
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-46.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-45.ToolBarInfoEx]
 Title=Menu bar
 Buttons=BAAAAAAIAACAAAAAAIAADAAAAAAIAAEAAAAAAIAAFAAAAAAIAAGAAAAAAIAAHAAAAAAIAAIAAAAAAIAAJAAAAAAIAA
-[WorkState_v1_1.DockState.Bar-47]
+[WorkState_v1_1.DockState.Bar-46]
 BarID=59392
 YPos=28
 Docking=True
@@ -1710,10 +1705,10 @@ ClassName=SECCustomToolBar
 WindowName=File
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-47.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-46.ToolBarInfoEx]
 Title=File
 Buttons=AABOAAAAAABABOAAAAAADABOAAAAAAAAAAAAAAAADCBOAAAAAACCBOAAAAAAFCBOAAAAAAAAAAAAAAAAHABOAAAAAA
-[WorkState_v1_1.DockState.Bar-48]
+[WorkState_v1_1.DockState.Bar-47]
 BarID=59402
 XPos=981
 YPos=28
@@ -1744,10 +1739,10 @@ ClassName=SECCustomToolBar
 WindowName=Navigate
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-48.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-47.ToolBarInfoEx]
 Title=Navigate
 Buttons=EPBIAAAAAAFPBIAAAAAAJPBIAAAAAAKPBIAAAAAA
-[WorkState_v1_1.DockState.Bar-49]
+[WorkState_v1_1.DockState.Bar-48]
 BarID=59397
 XPos=870
 YPos=28
@@ -1778,10 +1773,10 @@ ClassName=SECCustomToolBar
 WindowName=BookMark
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-49.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-48.ToolBarInfoEx]
 Title=BookMark
 Buttons=EPALAAAAAADNALAAAAAAFBBLAAAAAAGDBLAAAAAA
-[WorkState_v1_1.DockState.Bar-50]
+[WorkState_v1_1.DockState.Bar-49]
 BarID=59400
 XPos=713
 YPos=28
@@ -1812,14 +1807,14 @@ ClassName=SECCustomToolBar
 WindowName=View
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-50.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-49.ToolBarInfoEx]
 Title=View
 Buttons=ILAIAAAAAAOBBIAAAAAAIKAIAAAAAAFFAIAAAAAADGBIAAAAAAKMAIAAAAAA
-[WorkState_v1_1.DockState.Bar-51]
+[WorkState_v1_1.DockState.Bar-50]
 BarID=59398
 XPos=371
 YPos=28
-MRUWidth=1901
+MRUWidth=3470
 Docking=True
 MRUDockID=59419
 MRUDockLeftPos=371
@@ -1834,7 +1829,7 @@ ExStyle=780
 PrevFloating=False
 MDIChild=False
 PctWidth=250000
-MRUFloatCX=337
+MRUFloatCX=342
 MRUFloatCY=30
 MRUHorzDockCX=342
 MRUHorzDockCY=30
@@ -1847,14 +1842,14 @@ ClassName=SECCustomToolBar
 WindowName=Debug
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-51.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-50.ToolBarInfoEx]
 Title=Debug
 Buttons=OBAIAAAAAAHJAIAAAAAACNAIAAAAAAJBAIAAAAAAGNAIAAAAAAMBAIAAAAAAAAAAAAAAAADHAIAAAAAAPGAIAAAAAAJHAIAAAAAAHHAIAAAAAAAAAAAAAAAAHMAIAAAAAAAAAAAAAAAAFKAIAAAAAAHGAIAAAAAA
-[WorkState_v1_1.DockState.Bar-52]
+[WorkState_v1_1.DockState.Bar-51]
 BarID=59399
 XPos=237
 YPos=28
-MRUWidth=226
+MRUWidth=134
 Docking=True
 MRUDockID=59419
 MRUDockLeftPos=237
@@ -1882,10 +1877,10 @@ ClassName=SECCustomToolBar
 WindowName=Build
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-52.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-51.ToolBarInfoEx]
 Title=Build
 Buttons=JGAIAAAAAALFAIAAAAAAPKBIAAAAAAPMAIAAAAAADGAIAAAAAA
-[WorkState_v1_1.DockState.Bar-53]
+[WorkState_v1_1.DockState.Bar-52]
 BarID=59401
 Visible=False
 XPos=195
@@ -1917,10 +1912,10 @@ ClassName=SECCustomToolBar
 WindowName=Configure
 ResourceID=0
 ptn_Child1=ToolBarInfoEx
-[WorkState_v1_1.DockState.Bar-53.ToolBarInfoEx]
+[WorkState_v1_1.DockState.Bar-52.ToolBarInfoEx]
 Title=Configure
 Buttons=CNBIAAAAAA
-[WorkState_v1_1.DockState.Bar-54]
+[WorkState_v1_1.DockState.Bar-53]
 BarID=269
 Visible=False
 XPos=0
@@ -1929,11 +1924,11 @@ Docking=True
 MRUDockID=0
 MRUDockLeftPos=0
 MRUDockTopPos=0
-MRUDockRightPos=53234680
-MRUDockBottomPos=53231200
+MRUDockRightPos=0
+MRUDockBottomPos=0
 MRUFloatStyle=4
 MRUFloatXPos=-2147483648
-MRUFloatYPos=53232824
+MRUFloatYPos=0
 Style=20372
 ExStyle=3857
 PrevFloating=False
@@ -1951,7 +1946,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=8051 Controller/Misc
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-55]
+[WorkState_v1_1.DockState.Bar-54]
 BarID=270
 Visible=False
 XPos=0
@@ -1982,7 +1977,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=ADC0
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-56]
+[WorkState_v1_1.DockState.Bar-55]
 BarID=271
 Visible=False
 XPos=0
@@ -1991,11 +1986,11 @@ Docking=True
 MRUDockID=0
 MRUDockLeftPos=0
 MRUDockTopPos=0
-MRUDockRightPos=0
-MRUDockBottomPos=0
+MRUDockRightPos=37991112
+MRUDockBottomPos=37975632
 MRUFloatStyle=4
 MRUFloatXPos=-2147483648
-MRUFloatYPos=0
+MRUFloatYPos=868
 Style=20372
 ExStyle=3857
 PrevFloating=False
@@ -2013,7 +2008,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=ADC2
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-57]
+[WorkState_v1_1.DockState.Bar-56]
 BarID=272
 Visible=False
 XPos=0
@@ -2044,7 +2039,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Cache
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-58]
+[WorkState_v1_1.DockState.Bar-57]
 BarID=273
 Visible=False
 XPos=0
@@ -2075,7 +2070,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Comparators
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-59]
+[WorkState_v1_1.DockState.Bar-58]
 BarID=274
 Visible=False
 XPos=0
@@ -2106,7 +2101,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=DAC
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-60]
+[WorkState_v1_1.DockState.Bar-59]
 BarID=275
 Visible=False
 XPos=0
@@ -2137,7 +2132,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Flash
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-61]
+[WorkState_v1_1.DockState.Bar-60]
 BarID=276
 Visible=False
 XPos=0
@@ -2146,11 +2141,11 @@ Docking=True
 MRUDockID=0
 MRUDockLeftPos=0
 MRUDockTopPos=0
-MRUDockRightPos=0
-MRUDockBottomPos=0
+MRUDockRightPos=53452952
+MRUDockBottomPos=53453184
 MRUFloatStyle=4
 MRUFloatXPos=-2147483648
-MRUFloatYPos=0
+MRUFloatYPos=868
 Style=20372
 ExStyle=3857
 PrevFloating=False
@@ -2168,7 +2163,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Interrupts
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-62]
+[WorkState_v1_1.DockState.Bar-61]
 BarID=277
 Visible=False
 XPos=0
@@ -2199,7 +2194,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=MAC
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-63]
+[WorkState_v1_1.DockState.Bar-62]
 BarID=278
 Visible=False
 XPos=0
@@ -2208,11 +2203,11 @@ Docking=True
 MRUDockID=0
 MRUDockLeftPos=0
 MRUDockTopPos=0
-MRUDockRightPos=37270216
-MRUDockBottomPos=37254736
+MRUDockRightPos=0
+MRUDockBottomPos=0
 MRUFloatStyle=4
 MRUFloatXPos=-2147483648
-MRUFloatYPos=37170952
+MRUFloatYPos=0
 Style=20372
 ExStyle=3857
 PrevFloating=False
@@ -2230,7 +2225,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Oscillators
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-64]
+[WorkState_v1_1.DockState.Bar-63]
 BarID=279
 Visible=False
 XPos=0
@@ -2261,7 +2256,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=PCA
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-65]
+[WorkState_v1_1.DockState.Bar-64]
 BarID=280
 Visible=False
 XPos=0
@@ -2292,7 +2287,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Ports
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-66]
+[WorkState_v1_1.DockState.Bar-65]
 BarID=281
 Visible=False
 XPos=0
@@ -2323,7 +2318,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=SMBus
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-67]
+[WorkState_v1_1.DockState.Bar-66]
 BarID=282
 Visible=False
 XPos=0
@@ -2354,7 +2349,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=SPI Bus
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-68]
+[WorkState_v1_1.DockState.Bar-67]
 BarID=283
 Visible=False
 XPos=0
@@ -2385,7 +2380,7 @@ TypeID=0
 ClassName=PeriphWnd
 WindowName=Timers
 ResourceID=0
-[WorkState_v1_1.DockState.Bar-69]
+[WorkState_v1_1.DockState.Bar-68]
 BarID=284
 Visible=False
 XPos=0
@@ -2425,7 +2420,7 @@ ptn_Child1=MainFrame
 ptn_Child2=ChildFrames
 [WorkState_v1_1.Frames.MainFrame]
 WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPANAAAAAAANAAAAAAAIFAAAAAAEDAAAAA
-Title=Silicon Laboratories IDE - [Part3.c]
+Title=Silicon Laboratories IDE - [Part2-2v2.c]
 [WorkState_v1_1.Frames.ChildFrames]
 ptn_Child1=Document-0
 ptn_Child2=Document-1
@@ -2434,13 +2429,16 @@ ptn_Child4=Document-3
 ptn_Child5=Document-4
 ptn_Child6=Document-5
 ptn_Child7=Document-6
+ptn_Child8=Document-7
+ptn_Child9=Document-8
+ptn_Child10=Document-9
 [WorkState_v1_1.Frames.ChildFrames.Document-0]
 ptn_Child1=ViewFrame-0
 [WorkState_v1_1.Frames.ChildFrames.Document-0.ViewFrame-0]
 DocPathName=part1.c
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPAMPPPPPPBHAAAAAAGHEAAAAALPBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPKJDAAAAAMHBAAAAAHGFAAAAAKDCAAAAA
 IsActiveChildFrame=False
 [WorkState_v1_1.Frames.ChildFrames.Document-1]
 ptn_Child1=ViewFrame-0
@@ -2448,7 +2446,7 @@ ptn_Child1=ViewFrame-0
 DocPathName=..\Lab1\Hello.c
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPCIAAAAAACIAAAAAANHEAAAAAMACAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPKJDAAAAAOLAAAAAAHGFAAAAAMHBAAAAA
 IsActiveChildFrame=False
 [WorkState_v1_1.Frames.ChildFrames.Document-2]
 ptn_Child1=ViewFrame-0
@@ -2456,7 +2454,7 @@ ptn_Child1=ViewFrame-0
 DocPathName=putget.h
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPEDAAAAAAEDAAAAAAPCEAAAAAOLBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPKJDAAAAAAAAAAAAAHGFAAAAAOLAAAAAA
 IsActiveChildFrame=False
 [WorkState_v1_1.Frames.ChildFrames.Document-3]
 ptn_Child1=ViewFrame-0
@@ -2464,7 +2462,7 @@ ptn_Child1=ViewFrame-0
 DocPathName=Part2.c
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPOEAAAAAAOEAAAAAAJEEAAAAAINBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPNMBAAAAAMHBAAAAAKJDAAAAAKDCAAAAA
 IsActiveChildFrame=False
 [WorkState_v1_1.Frames.ChildFrames.Document-4]
 ptn_Child1=ViewFrame-0
@@ -2472,15 +2470,15 @@ ptn_Child1=ViewFrame-0
 DocPathName=Part3.c
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPIGAAAAAAIGAAAAAADGEAAAAACPBAAAAA
-IsActiveChildFrame=True
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPNMBAAAAAOLAAAAAAKJDAAAAAMHBAAAAA
+IsActiveChildFrame=False
 [WorkState_v1_1.Frames.ChildFrames.Document-5]
 ptn_Child1=ViewFrame-0
 [WorkState_v1_1.Frames.ChildFrames.Document-5.ViewFrame-0]
 DocPathName=Part2-2.c
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPCIAAAAAACIAAAAAADJEAAAAAMACAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPNMBAAAAAAAAAAAAAKJDAAAAAOLAAAAAA
 IsActiveChildFrame=False
 [WorkState_v1_1.Frames.ChildFrames.Document-6]
 ptn_Child1=ViewFrame-0
@@ -2488,7 +2486,31 @@ ptn_Child1=ViewFrame-0
 DocPathName=Part2-2v2.c
 DocumentString=Source File
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPMJAAAAAAMJAAAAAANKEAAAAAGCCAAAAA
+WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPAAAAAAAAMHBAAAAANMBAAAAAKDCAAAAA
+IsActiveChildFrame=True
+[WorkState_v1_1.Frames.ChildFrames.Document-7]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_1.Frames.ChildFrames.Document-7.ViewFrame-0]
+DocPathName=SPISLAVE.c
+DocumentString=Source File
+DocTemplateIndex=0
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPAAAAAAAAOLAAAAAANMBAAAAAMHBAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_1.Frames.ChildFrames.Document-8]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_1.Frames.ChildFrames.Document-8.ViewFrame-0]
+DocPathName=Part3-2.c
+DocumentString=Source File
+DocTemplateIndex=0
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPAAAAAAAAAAAAAAAANMBAAAAAOLAAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_1.Frames.ChildFrames.Document-9]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_1.Frames.ChildFrames.Document-9.ViewFrame-0]
+DocPathName=part3-3.c
+DocumentString=Source File
+DocTemplateIndex=0
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPIPPPPPPPBOPPPPPPIGAAAAAAIGAAAAAALGFAAAAADHBAAAAA
 IsActiveChildFrame=False
 [WorkState_v1_1.ProjectTarget]
 ProjectTarget=C8051F120
@@ -2515,13 +2537,13 @@ Assembler=C:\Program Files (x86)\SDCC\bin\sdas8051.exe
 [WorkState_v1_1.AssFlag]
 AssFlag=-plosgff
 [WorkState_v1_1.AssFormat]
-AssFormat=<Executable Name> <Flags> <Input File(s)> 
+AssFormat=<Executable Name> <Flags> <Input File(s)>   
 [WorkState_v1_1.Compiler]
 Compiler=C:\Program Files (x86)\SDCC\bin\sdcc.exe
 [WorkState_v1_1.CompFlag]
 CompFlag=-c --debug --use-stdout -V --nogcse
 [WorkState_v1_1.CompFormat]
-CompFormat=<Executable Name> <Flags> <Input File(s)> 
+CompFormat=<Executable Name> <Flags> <Input File(s)>   
 [WorkState_v1_1.RunOptimizer]
 RunOptimizer=0
 [WorkState_v1_1.Linker]
@@ -2529,11 +2551,11 @@ Linker=C:\Program Files (x86)\SDCC\bin\sdcc.exe
 [WorkState_v1_1.LinkFlag]
 LinkFlag=--debug --use-stdout -V
 [WorkState_v1_1.LinkFormat]
-LinkFormat=<Executable Name> <Flags> -o<Output File> <Input File(s)> 
+LinkFormat=<Executable Name> <Flags> -o<Output File> <Input File(s)>   
 [WorkState_v1_1.PreprocFlag]
 PreprocFlag=
 [WorkState_v1_1.PreprocFormat]
-PreprocFormat= 
+PreprocFormat=   
 [WorkState_v1_1.DisList]
 DisList=1
 [WorkState_v1_1.DisOP]
@@ -2576,7 +2598,7 @@ C2StrobeTime=0
 [WorkState_v1_1.Adapter]
 Adapter=3
 [WorkState_v1_1.AdapterSN]
-AdapterSN=EC3004BCABA
+AdapterSN=EC3004BC4F2
 [WorkState_v1_1.USB Adapter Power]
 USB Adapter Power=0
 [WorkState_v1_1.PFiles]
@@ -2598,14 +2620,20 @@ FileName=Part2-2.c
 ptn_Child1=FileName
 [WorkState_v1_1.PFiles.FileName.FileName.FileName.FileName.FileName.FileName]
 FileName=Part2-2v2.c
+ptn_Child1=FileName
+[WorkState_v1_1.PFiles.FileName.FileName.FileName.FileName.FileName.FileName.FileName]
+FileName=Part3-2.c
+ptn_Child1=FileName
+[WorkState_v1_1.PFiles.FileName.FileName.FileName.FileName.FileName.FileName.FileName.FileName]
+FileName=part3-3.c
 [WorkState_v1_1.AFiles]
 [WorkState_v1_1.CFiles]
 ptn_Child1=FileName
 [WorkState_v1_1.CFiles.FileName]
-FileName=Part3.c
+FileName=Part2-2v2.c
 [WorkState_v1_1.LFiles]
 ptn_Child1=FileName
 [WorkState_v1_1.LFiles.FileName]
-FileName=Part3.rel
+FileName=Part2-2v2.rel
 [WorkState_v1_1.BankMap]
 [WorkState_v1_1.Folders]

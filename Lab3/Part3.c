@@ -31,7 +31,8 @@ void UART0_int(void) __interrupt 4;
 void main(void)
 {
 	char i;
-	char top_pos = 2;
+	char j;
+	char scroll_dwn = 0;
 
     WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
@@ -50,42 +51,50 @@ void main(void)
 	printf("\033[13;0H");
 	printf("Received char\n\r");              // jump down type
 	printf("\033[s"); 									// save position
-	printf("\033[2;0H");									// jump back up
+	
+	
 	while(1)
     {
 		//printf("ENTERED LOOP\r\n");
 		SFRPAGE = UART0_PAGE;  
 		//Transmit
 		if(RI0){
-			printf("RI0 = %d\r\n",RI0);
 			RI0 = 0;
-			//choice = getchar();
+			choice = SBUF0;
 			SFRPAGE = SPI0_PAGE;
-			choice = SPI0DAT;
+			//choice = SPI0DAT;
 			SPIF = 0;
 			NSSMD0 = 0;
-			printf("test");
 			while(SPI0CFG & 0x80);
 			SPIF = 0;
 			SPI0DAT = choice;
 			for(i=0;i<100;i++);	
 			while(!SPIF);	
-			SPIF = 0;										// Wait for transfer to be completed
-			printf("Choice is: %c\n\r",choice);
-			top_pos += 1;
+			SPIF = 0;			
+			printf("\033[3;12r");
+			printf("\033[2;0H");
+			for(j=0;j<scroll_dwn;j++){
+				printf("\033[B");
+			}							
+			//for(j=0;j<100;j++);
+			printf("Choice is: %c\r",choice);
+			
 		
 			//Receive
 
 			NSSMD0 = 1;
 			for(i=0;i<100;i++);	
-			printf("\033[u"); // restore cursor	
-			printf("Data read from SPI0DAT is: %c\n\r",SPI0DAT);
-			printf("\033[s");
-			printf("\033[%c;0H",top_pos);
+			//printf("\033[u"); // restore cursor	
+			printf("\033[14;24r");
+			printf("\033[14;0H");
+			for(j=0;j<scroll_dwn;j++){
+				printf("\033[B");
+			}							
+			printf("Data read from SPI0DAT is: %c\r",SPI0DAT);
+			scroll_dwn += 1;
+			if (scroll_dwn > 10) scroll_dwn = 10;
 
 			SPIF = 0;
-			//in_flag = 0;
-			//RI0 = 0;
 		}
     }
 }
