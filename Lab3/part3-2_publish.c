@@ -13,7 +13,6 @@
 #define SYSCLK      49766400            // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200              // UART baud rate in bps
 char choice;
-//char in_flag = 0;
 char scroll_dwn = 0;
 char dummy;
 //------------------------------------------------------------------------------------
@@ -100,24 +99,7 @@ void SPI0_WRITE(void){
 		//Output local char						
 		printf("Choice is: %c\r",choice);
 
-		
-
 		write_dummy();		
-
-		/* //Migrated to handle_dummy()
-		//Read Dummy
-		NSSMD0 = 1;					// Release slave
-		dummy = SPI0DAT;			// Get received char from SPI0DAT (dummy)
-		//for(i=0;i<100;i++);			// Small delay
-	
-		//Write Dummy
-		NSSMD0 = 0;					// Select slave
-		while(SPI0CFG & 0x80);		// Make sure SPI is not busy
-		SPIF = 0;					// Clear SPIF
-		SPI0DAT = 0xFF;				// Load dummy into SPI0DAT
-		//for(i=0;i<100;i++);			// Small delay
-		while(!SPIF);				// Wait until transmission complete
-		SPIF = 0;*/
 	}
 }
 
@@ -149,7 +131,7 @@ void SPI0_READ(void){
 	}
 	
 	//Output choice	
-							
+	//choice = SPI0DAT;						
 	printf("Data read from SPI0DAT is: %c\r",choice);
 	
 	scroll_dwn += 1;
