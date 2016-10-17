@@ -44,8 +44,29 @@ The code for parts 1, 2 and 3 can be found in the appendix below. All code was u
 \subsubsection{Part 1}
 The purpose of C program for the first section of the lab was to write a procedure that would monitor the UART0 and UART1 serial ports continuously, and echo a message received on one port to the other. For this section of the lab, this was accomplished by polling the receive interrupt flags RI0 and RI1 for UART0 and UART1 respectively. 
 
-Since this lab uses both UART0 and UART1, both ports must be enabled on the crossbar. The enable bit for UART0 can be found on the XBR0 SFR, XBR2 for that of UART1. As always, the crossbar enable bit in XBR2 must be set. UART0 was configured to be in mode 1 (8-bit UART with variable baud rate), and use Timer2 to generate a baud rate of \si{9600}{bps}. UART0 configuration can set in the SSTA0 and SCON0 SFRs. Timer2 was configured to be in auto-reload mode and use SYSCLK as a base. These settings can be found in the TMR2CN and TMR2CF SRFs. To count to 9600, the reload value must be set to \texttt{0xFEBC}.
-UART1 was similarly configured, but used Timer1 to generate a baud rate of \si{115200}{bps}. UART1 can be configured in the SCON1 SFR. Timer1 was set to be an 8-bit counter with auto-reload, and use SYSCLK as a base; these changes can be made in the TMOD SFR. The Timer1 reload value should be set as \texttt{0x28}. When configuring both UARTs be sure that the receive enable bits are set in the SCON SFRs and that the timers are have been started. 
+Since this lab uses both UART0 and UART1, both ports must be enabled on the crossbar. The enable bit for UART0 can be found on the XBR0 SFR, XBR2 for that of UART1. As always, the crossbar enable bit in XBR2 must be set. UART0 was configured to be in mode 1 (8-bit UART with variable baud rate), and use Timer2 to generate a baud rate of \si{9600}{bps}. UART0 configuration can set in the SSTA0 and SCON0 SFRs. Timer2 was configured to be in auto-reload mode and use SYSCLK as a base. These settings can be found in the TMR2CN and TMR2CF SRFs. To count to 9600, the reload value must be set to \texttt{0xFEBC}. This was calculated as follows:\\
+\begin{equation}
+	\mathtt{Mode1\_BaudRate} = \frac{\mathtt{SYSCLK}}{16*(65536-\mathtt{ReloadValue})}
+\end{equation}\\
+For a desired baud rate of 9600 and SYSCLK of \si{49,766,400}{Hz}, this comes out to:\\
+\begin{equation}
+9600= \frac{49766400}{16*(65536-\mathtt{ReloadValue})}
+\end{equation}
+\begin{equation}
+\mathtt{ReloadValue} = 65212
+\end{equation}
+This is equivalent to \texttt{0xFEBC} in hex.
+
+UART1 was similarly configured, but used Timer1 to generate a baud rate of \si{115200}{bps}. UART1 can be configured in the SCON1 SFR. Timer1 was set to be an 8-bit counter with auto-reload, and use SYSCLK as a base; these changes can be made in the TMOD SFR. The Timer1 reload value should be set as \texttt{0xE5}. This was calculated as shown below:\\ 
+\begin{equation}
+\mathtt{Mode1\_BaudRate} = \frac{\mathtt{SYSCLK}}{16*(256-\mathtt{ReloadValue})}
+\end{equation}
+\begin{equation}
+\mathtt{ReloadValue} = 229
+\end{equation}\\
+This is equivalent to \texttt{0xE5} in hex.
+
+When configuring both UARTs be sure that the receive enable bits are set in the SCON SFRs and that the timers are have been started. In addition to this, in the P0MDOUT SFR configure the TX pins (P0.0, P0.2) as push-pull for outputs, and the RX pins (P0.1, P0.3) as open-drain for inputs; Also, in the P0 SFR set the inputs (RX pins) for high impedance. 
 
 The main routine of this program consists of two sub-routines `checkSBUF()' and `echo()' which are run in an infinite loop. The `checkSBUF()' function continuously polls RI0 and RI1, and returns the value stored in the UART data register when one of the flags is set. The UART data register (SBUFn) is used for both a receive and a transmit buffer. When data is read from SBUF, as is the case for the `checkSBUF()' function, it comes from the receive buffer. When data is written to SBUF it goes to the transmit buffer and is eventually transmitted when a full byte has been written. The returned value from `checkSBUF()' is then passed into the `echo()' function, where it is loaded into both SBUF0 and SBUF1 for transmission to both terminals. Recall that SBUF0 and SBUF1 are on different pages, and that SFRPAGE should be changed accordingly. 
 
@@ -59,16 +80,29 @@ The program for part 2 was handled slightly differently. The main routine now co
 
 In the main routine, once the \uz\_flag has been set, the program calls the `echo()' function, and clears the flag. If the \uo\_flag has been set, the program disables \uz\ interrupts, transmits the character to \uz\ via the SBUF0 register, re-enables \uz\ interrupts, then clears the flag. In this case, the character is sent only to \uz\ rather than being echoed to both ports to avoid a feedback loop of infinite transmissions between the two microcontrollers.
 
-
+In order to allow interrupts on \uo\ to go through, in the main routine there is a brief period of time in which \uz\ is disable. This small window was implemented by incrementing a variable to 255 in a for loop.
 
 
 \subsubsection{Part 3}
+The third section of this lab deals with the serial peripheral interface bus (SPI), a synchronous serial communication interface. The goal of this section was to communicate with the 68HC11 as a slave device, and use it to echo back any characters that get sent to it. Although the primary focus of this lab is SPI, UART0 is also used to send data to the terminal. As was the case with UART, SPI must also be enabled on the crossbar to function. It's enable bit can be found on XBR0. The relevant configuration SFRs for SPI are SPI0CFG, SPI0CN, and SPI0CKR. In SPI0CFG, enable master mode, so that the 8051 acts as the master device. In the SPI0CN register, enable SPI0, and set it to operate in 4-wire single master mode. The SPI0CKR register stores data pertaining to SPI clock rate, which can be calculated as follows:\\
+\begin{equation}
+SCK = \frac{SYSCLK}{2\times(SPI0CKR+1)}
+\end{equation}\\
+Setting SPI0CKR to \texttt{0x18} with a SYSCLK of 49,766,400 results in a SCK of \si{995,328}{Hz}. For SPI communication, in the P0MDOUT SFR, the SCK, MOSI, and NSS pins (P0.2, P0.4, P0.5 respectively) must be set to push-pull.
+
+The program for this section used 3 sub-routines: `SPI0\_READ()', which handles receiving data from the slave device and outputting it to the terminal, `SPI0\_WRITE()', which handles receiving user input, and sending that data to a slave device, and `write\_dummy()' which sends a byte of garbage data (a dummy) to the slave device. The main routine simply waits for user input by polling RI0, and when set, clears the flag and calls the  `SPI0\_WRITE()' and `SPI0\_READ()' functions.
+
+The `write\_dummy()' function first selects the slave by clearing NSSMD0. It then checks to make sure that SPI is not busy, then clears SPIF and writes a byte of data (\texttt{0xFE} in this case) to the SPI data register SPI0DAT. Like the UART data register SBUF, SPI0DAT is used both to receive and transmit. Checking that the SPI is not busy with a transmission can be done by monitoring bit 7 of the SPI0CFG register. SPIF is the SPI interrupt flag, which is set at the end of a data transfer. Like RIn and TIn, this flag must be cleared manually. 
+
+The `SPI0\_WRITE()' function starts by loading the data in SBUF0 into a variable. It then selects the slave, ensures that SPI is not busy, clears SPIF, and loads the from the variable into SPI0DAT to be sent to the slave. It then waits for the transmission to end and clears SPIF. Because the slave device contains a second shift register, the echoed response will be delayed by one transmission. This is why dummy bytes must be read and written in between every actual read and write. The next step in the `SPI0\_WRITE()' routine is to read the dummy byte, which is done by selecting the salve and moving the dummy byte out of SPI0DAT. This program will output the dummy char to the terminal. After reading the dummy char, the input character (received on UART0) is displayed on the terminal and the `write\_dummy()' function is called. The `SPI0\_READ()' function follows the same procedure as reading the dummy byte.
+
+The display is formatted using ANSI escape sequences to split the screen horizontally, with the top half used to display the input received on UART0, and the bottom half for the echoed character (received on the MISO pin of SPI). In order to make the two halves scroll independently, the scroll area must be redefined to the half being printed to before each print. A for loop was used to move the cursor down the appropriate amount of rows. This was all done using ANSI escape sequences.
 \subsection{Hardware}
-
-Sections 1 and 3 of this lab did were identical in terms of hardware. Section 2 required no hardware other than a serial-to-USB adapter in order to interface with the terminal.
-
-In sections 1 and 3, the pushbutton included on the breadboard was used. It was wired such that the button would be grounded when pressed, with the output connected to pin 18 on the EVB, corresponding to P0.2 of the 8051. A pull-up resistor was used to prevent false external interrupts.
+The hardware for section 1 involved connecting a DB9 adapter to be used at the UART1 port. A schematic for this can be viewed in the appendix below. The TD pin on the DB9 was connected to the input of a hex inverter, with the output connected to the RX1 pin of UART1 (P0.3). The TX1 pin (P0.2) was connected to the input of an inverter, with the output connected to the RD pin on the DB9. In order to establish a common ground between the adapter and the microcontroller, the ground pin on the DB9 was connected to pin 1 on the 60 pin bus (DGND), which was connected to the ground on the power supply used. 
  
+Section 2 called for connecting the UART1s of two microcontrollers. This was done by connecting the TX1 pin of one 8051 to the RX1 pin of the other, and vice versa for the RX1 pin. A diagram of this can also be found in the appendix below.
+
+
 \section{Results}
 
 
