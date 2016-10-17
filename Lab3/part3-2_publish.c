@@ -204,15 +204,9 @@ void PORT_INIT(void)
 	SFRPAGE  = SPI0_PAGE;
     SPI0CFG = 0x40;						// Master mode
 	SPI0CN  = 0x0D;					// Enable SPI
-	SPI0CKR  = 	0x18;					// SPI clock rate for 230399
-	//SPI0CKR  = 19;                    // 1.244 MHz
+	SPI0CKR  = 	0x18;					// SPI clock rate for 995,328
 	
-	//SPIF = 1;	
-	
-	//EIE1 = 0x01;
 	EA = 1;
-	//ES0 = 1;
-
 	
 	SFRPAGE  = SFRPAGE_SAVE;            // Restore SFR page
 }
