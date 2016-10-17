@@ -36,7 +36,10 @@
 \pagebreak
 \section{Introduction}
 
-
+The overall goal of this lab is to become familiar with configuring the UART and SPI serial communication protocols on the 8051 and utilizing their respective interrupts to perform terminal operations. 
+The lab is divided into three sections. In the first section, a C program is created to configure both UART0 and UART1 on the 8051 to react to keyboard presses. The code constantly polls both of the ports to check whether a keyboard character has been entered into the terminal. Once a character is pressed, the program will echo the character back to the terminal on both UART0 and UART1. If the entered character is an <ESC> key, the program displays a brief message and stops the program on both UARTs. Unlike past labs, the getchar() function could not be used to check whether a keyboard button was pressed because it would only check UART0. 
+In the second section, the program’s logic changed so that interrupts would be used rather than polling. Additionally, the program needed to be altered so that two 8051’s could communicate through their UART1 connections.
+In the third section, a new C program is written echo characters using the 8051’s SPI protocol. Whenever a character is entered on the 8051’s UART0, it will be echoed to the terminal through the 8051’s SPI0. A loopback wire is used to connect the MISO and MOSI pins to verify that the SPI configuration was successful. Once the SPI0 is configured correctly, the code is modified again so that the 8051 can communicate with a 68HC11 via SPI0. The 8051 functions as the master device and the 68HC11 functions as the slave device. 
 \section{Methods}
 \subsection{Software}
 The code for parts 1, 2 and 3 can be found in the appendix below. All code was uploaded and run on the 8051 through the programming/debugging USB port. 	
@@ -102,14 +105,16 @@ The hardware for section 1 involved connecting a DB9 adapter to be used at the U
  
 Section 2 called for connecting the UART1s of two microcontrollers. This was done by connecting the TX1 pin of one 8051 to the RX1 pin of the other, and vice versa for the RX1 pin. A diagram of this can also be found in the appendix below.
 
-
+In section 3, the 68HC11 EVB was used as a SPI slave device. It was connected to the 8051 by connecting the MISO pins (pin 22 on 68HC11 to P0.3 of 8051), the MOSI pins (pin 23 on 68HC11 to P0.4 of 8051), the SCK pins (pin 24 on 68HC11 to P0.2 of 8051), the SS* pin on the 68HC11 to the NSS pin on the 8051 (pin 24 on 68HC11 to P0.5 of 8051), and establishing a common ground between the two devices (pin 1 on both 60 pin buses). The schematic for this can be viewed in the appendix section below. 
 \section{Results}
 
-
+By completing section one of the lab, a functioning C program was produced to echo characters between the 8051’s UART0 and UART1 ports via polling. After completing section two of the lab, a C program was developed to echo characters between two 8051s’ UART ports. The UART0 ports are used to take in the keyboard presses and the UART1 ports are used to communicate between the two processors. By completing section three of the lab, a C program was created  to use the 8051’s SPI0 port to echo characters back and forth with an 68HC11. 
 
 
 \section{Conclusion}
 
+The end results of the lab generally matched with the initial goals however there were numerous instances where the system did not behave as expected. During section 2 and 3 of the lab, a lot of time was spent testing and debugging the C programs to control the serial communication ports. An enhancement was added to section two of the lab so that the characters echoed by both UARTs would scroll on the screen in two separate scrolling areas. 
+If more time was given to complete this lab assignment, additional enhancements would be added to section 3 of the lab so that the slave would react to certain keypresses. This would increase the functionality of the SPI0 communication and would make the program more interactive for the user. 
 
 
 
@@ -118,31 +123,47 @@ Section 2 called for connecting the UART1s of two microcontrollers. This was don
 \section{Appendices}
 \subsection{Modified putget.h}
 	\lstinputlisting{putget.h}
-\subsection{Circuit Schematic for sections 1 and 3}
-	\begin{figure}[H]
-		\centering
-		\includegraphics{Part1Schematic.png}
-		\caption{Circuit schematic for parts 1 and 3}
-		\label{schematic}
-	\end{figure} 
 \subsection{Part 1}
-	\subsubsection{Code}
+	\subsubsection{Circuit Schematic for section 1}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{Part1Schematic.png}
+			\caption{Circuit schematic for part 1}
+			\label{schematic1}
+		\end{figure} 
+		\pagebreak
+	\subsubsection{Code for part 1}
 		\lstinputlisting{part1.c}
 \subsection{Part 2}
-	\subsubsection{Code}
+	\subsubsection{Circuit Schematic for section 2}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{Part2Schematic.png}
+			\caption{Circuit schematic for part 2}
+			\label{schematic2}
+		\end{figure} 
+		\pagebreak
+	\subsubsection{Code for part 2}
 		\lstinputlisting{part2-2v2_publish.c}	
 
 %\pagebreak
 \subsection{Part 3}
-	%\pagebreak
-	\subsubsection{Code}
+	\subsubsection{Circuit Schematic for section 2}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{Part3Schematic.png}
+			\caption{Circuit schematic for part 3}
+			\label{schematic3}
+		\end{figure}
+	\pagebreak
+	\subsubsection{Code for part 3}
 		\lstinputlisting{part3-2_publish.c}
 	
 \section{References} 
 \noindent
-``MPS Lab 2," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/MPS_Lab_Ex2-Intrpt.pdf}. Accessed: Sep. 22, 2016.\\
+``MPS Lab 3," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/MPS_Lab_Ex3-Serial.pdf}. Accessed: Oct. 16, 2016.\\
 \newline\noindent
-``C8051 Manual," in RPI ECSE Department, 1.4 ed., 2005. [Online]. Available: \url{https://www.ecse.rpi.edu/courses/CStudio/Silabs/C8051F12x-13x.pdf}. Accessed: Sep. 22, 2016.
+``C8051 Manual," in RPI ECSE Department, 1.4 ed., 2005. [Online]. Available: \url{https://www.ecse.rpi.edu/courses/CStudio/Silabs/C8051F12x-13x.pdf}. Accessed: Oct. 16, 2016.
 
 
 
