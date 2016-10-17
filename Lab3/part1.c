@@ -1,3 +1,7 @@
+// Nick Choi and Sam Deslandes
+// Code for section 1 of Lab 3.
+// This program echoes characters between UART0 and UART1 via polling. 
+// When a key is pressed on one terminal, it is echoed to the other.
 //---------------------------------------------------
 // Includes
 //---------------------------------------------------

@@ -206,8 +206,8 @@ void UART0_INIT(void)
     TMR2CN  = 0x00;             // Auto-reload mode, use clock defined in TMR2CF,  
 	TMR2CF  = 0x08;				// Timer 2 uses SYSCLK as time base
 
-	RCAP2H  = 0xFD;             // Set timer 2 auto-reload value for 4800bps
-	RCAP2L  = 0x78;
+	RCAP2H  = 0xFE;             // Set timer 2 auto-reload value for 4800bps
+	RCAP2L  = 0xBC;
 
 	TR2 = 1;					// Start timer 2
 	

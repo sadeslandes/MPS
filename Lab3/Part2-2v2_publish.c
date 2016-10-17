@@ -1,3 +1,9 @@
+// Nick Choi and Sam Deslandes
+// Code for section 2 of Lab 3.
+// This program echoes characters between UART0 and UART1 via interrupts. 
+// This program was designed to work with communication between two 8051 processors
+// with connected UART1s. When a key is pressed on UART0 of one of the MCUs, it is 
+// echoed to that of the other MCU.
 //---------------------------------------------------
 // Includes
 //---------------------------------------------------

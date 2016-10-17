@@ -88,9 +88,9 @@ void SPI0_WRITE(void){
 		for(j=0;j<scroll_dwn;j++){
 			printf("\033[B");
 		}
-		
+		//if(scroll_dwn == 10) printf("\r");
 		//Output local char						
-		printf("Choice is: %c\r",choice);
+		printf("Choice is: %c\n\r",choice);
 
 		
 
@@ -150,7 +150,7 @@ void SPI0_READ(void){
 	
 	//Output choice	
 							
-	printf("Data read from SPI0DAT is: %c\r",choice);
+	printf("Data read from SPI0DAT is: %c\n\r",SPI0DAT);
 	
 	scroll_dwn += 1;
 	if (scroll_dwn > 10) scroll_dwn = 10;

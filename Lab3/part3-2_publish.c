@@ -1,4 +1,9 @@
-
+// Nick Choi and Sam Deslandes
+// Code for section 3 of Lab 3.
+// This program used SPI to communicate with a 68HC11 slave device. When a key is
+// pressed on UART0, it it sent to the slave device and echoed back to the 8051. 
+// User input is diplayed on the top half of the terminal, with the echoed character
+// displayed on the bottom half.
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
@@ -15,6 +20,7 @@
 char choice;
 char scroll_dwn = 0;
 char dummy;
+char del_flag = 0;
 //------------------------------------------------------------------------------------
 // Function Prototypes
 //------------------------------------------------------------------------------------
@@ -55,7 +61,11 @@ void main(void)
 		if(RI0){
 			RI0 = 0;
 			SPI0_WRITE();
-			SPI0_READ();
+			if(!del_flag){
+				SPI0_READ();
+			}else{
+				del_flag = 0;
+			}
 		}
     }
 }
@@ -81,12 +91,15 @@ void SPI0_WRITE(void){
 	//for(i=0;i<100;i++);			// Small delay
 	
 	if(choice == 0x7F){
-		while(SPI0DAT != 0xFF){
-			for(i=0;i<100;i++);	
+		del_flag = 1;
+		while(1){
+			for(i=0;i<255;i++);	
 			write_dummy();
 			SPI0_READ();
-			//if(choice == 0xFF) break;
+			if(SPI0DAT == 0xFF){ break;}
+			for(i=0;i<255;i++);
 		}		
+		//del_flag = 1;
 	}
 	else{
 		//ANSI formatting
@@ -97,7 +110,7 @@ void SPI0_WRITE(void){
 		}
 		
 		//Output local char						
-		printf("Choice is: %c\r",choice);
+		printf("Choice is: %c\n\r",choice);
 
 		write_dummy();		
 	}
@@ -120,7 +133,9 @@ void SPI0_READ(void){
 	NSSMD0 = 1;					// Release slave
 	//Output dummy
 	printf("\033[2;30H");
-	printf("DUMMY: 0x%x", dummy);	
+	if(!del_flag){
+		printf("DUMMY: 0x%x", dummy);
+	}	
 	SPIF = 0;
 
 	//ANSI format	
@@ -132,7 +147,7 @@ void SPI0_READ(void){
 	
 	//Output choice	
 	//choice = SPI0DAT;						
-	printf("Data read from SPI0DAT is: %c\r",choice);
+	printf("Data read from SPI0DAT is: %c\n\r",SPI0DAT);
 	
 	scroll_dwn += 1;
 	if (scroll_dwn > 10) scroll_dwn = 10;
@@ -204,7 +219,7 @@ void PORT_INIT(void)
 	SFRPAGE  = SPI0_PAGE;
     SPI0CFG = 0x40;						// Master mode
 	SPI0CN  = 0x0D;					// Enable SPI
-	SPI0CKR  = 	0x18;					// SPI clock rate for 995,328
+	SPI0CKR  = 0x18					// SPI clock rate for 995,328
 	
 	EA = 1;
 	

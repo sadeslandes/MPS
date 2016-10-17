@@ -111,13 +111,16 @@ Section 2 called for connecting the UART1s of two microcontrollers. This was don
 In section 3, the 68HC11 EVB was used as a SPI slave device. It was connected to the 8051 by connecting the MISO pins (pin 22 on 68HC11 to P0.3 of 8051), the MOSI pins (pin 23 on 68HC11 to P0.4 of 8051), the SCK pins (pin 24 on 68HC11 to P0.2 of 8051), the SS* pin on the 68HC11 to the NSS pin on the 8051 (pin 24 on 68HC11 to P0.5 of 8051), and establishing a common ground between the two devices (pin 1 on both 60 pin buses). The schematic for this can be viewed in the appendix section below. 
 \section{Results}
 
-By completing section one of the lab, a functioning C program was produced to echo characters between the 8051’s UART0 and UART1 ports via polling. After completing section two of the lab, a C program was developed to echo characters between two 8051s’ UART ports. The UART0 ports were used to take in the keyboard presses and the UART1 ports were used to communicate between the two processors. By completing section three of the lab, a C program was created to use the 8051’s SPI0 port to echo characters back and forth with an 68HC11. 
+By completing section one of the lab, a functioning C program was produced to echo characters between the 8051’s UART0 and UART1 ports via polling. After completing section two of the lab, two C programs were developed to echo characters between multiple UART ports. The first program had the same functionality as the code from section one of the lab however it utilized interrupts rather than polling to monitor keyboard input. The second program was developed so that two 8051s could communicate with each other. The UART0 ports were used to take in keyboard presses and the UART1 ports were used to communicate the character presses between the two 8051s. By completing section three of the lab, another C program was created to use the 8051’s SPI0 port to echo characters back and forth with an 68HC11. 
+
+To further enhance this section of the lab, additional logic was added to the code so that the character information on the ANSI terminal would scroll up the screen. Additionally, a conditional block of code was incorporated so that the 68HC11 would write 100 characters to the 8051 whenever it received a \textless DEL \textgreater\ character. 
 
 
 \section{Conclusion}
 
 The end results of the lab generally matched with the initial goals however there were numerous instances where the system did not behave as expected. During section 2 and 3 of the lab, a lot of time was spent testing and debugging the C programs to control the serial communication ports. An enhancement was added to section two of the lab so that the characters echoed by both UARTs would scroll on the screen in two separate scrolling areas. 
-If more time was given to complete this lab assignment, additional enhancements would be added to section 3 of the lab so that the slave would react to certain keypresses. This would increase the functionality of the SPI0 communication and would make the program more interactive for the user. 
+
+If more time was given to complete this lab assignment, additional enhancements would be added to section 3 of the lab so that the code would perform parity checking on the data being received by the serial protocols. Another future enhancement could be adding additional slave devices to be controlled by the 8051 master device.   
 
 
 
