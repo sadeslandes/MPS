@@ -50,10 +50,8 @@ void main(void)
         AD0INT = 0; 				// Clear conversion interrupt flag
 		AD0BUSY = 1;   				// Start conversion
 		while(!AD0INT);				// Wait for conversion to end
-
 		
-		DAC0 = ADC0; 				// Get data form conversion and output directly to DAC
-		
+		DAC0 = ADC0; 				// Get data form conversion and output directly to DAC		
 	}
 }
 //------------------------------------------------------------------------------------
