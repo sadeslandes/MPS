@@ -34,6 +34,13 @@
 \pagebreak
 \section{Introduction}
 
+The overall goal of this lab is to become familiar with configuring the ADC, DAC and MAC on the 8051 to perform various applications such as digital filtering and implementing a voltmeter. 
+
+The lab is divided into three sections. In the first section, a C program is created to configure the ADC on the 8051 to convert analog signals to digital signals when a pushbutton is pressed. The code polls the ADC0 flag to determine whether or not to initialize an analog to digital conversion. When a conversion has been completed, the program displays the digital voltage reading rounded to six decimal places as well as the minimum voltage, maximum voltage and a moving average of the last 16 voltage readings via the ANSI terminal. The output is updated each time a conversion takes place. 
+
+In the third section, a C program is created to configure the DAC on the 8051 to convert digital signals to analog signals. This section builds upon the code in section 1 because the output of the ADC is used as the input of the DAC. The output of the DAC was observed using an oscilloscope. 
+
+In the fourth section, a new C program is written to implement an infinite impulse response (IIR) filter using the MAC on the 8051. The inputs of the digital filter are the present analog reading, the past two analog readings and the last digital output of the filter. All of these inputs are scaled by a coefficient and added together to reconstruct an analog waveform using digital signals using the 8051’s MAC. The output of the filter was observed using an oscilloscope. 
 
 \section{Methods}
 \subsection{Software}
@@ -101,13 +108,17 @@ The hardware for section 3 was identical to that of the previous section.
 
 \section{Results}
 
-
+By completing section one of the lab, a C program was developed to convert variable analog voltages to digital voltages. After completing section three of the lab, a C program was developed to convert digital voltages obtained from an ADC to the equivalent analog voltage values. By completing section four of the lab, a C program was created to use the MAC on the 8051 to reconstruct analog signals using the ADC and DAC written for the previous sections of the lab. The output of the MAC represented the output of an infinite impulse response digital filter.
 
 
 \section{Conclusion}
 
 
+The end results of the lab generally matched with the initial goals however there were numerous instances where the system did not behave as expected. In section 4 of the lab, the output of our digital filter was only able to accurately reconstruct the analog input signal up to a certain frequency threshold. This anomaly can be explained by Nyquist’s sampling theorem which states that in order to accurately represent an analog signal, the sampling frequency must be at least double the input signal’s frequency. If the sampling frequency falls below this threshold, the 8051 is unable to obtain enough samples to accurately model the input waveform. In this lab, the output signal did not accurately represent the input waveform after 25 kHz. Given that the sampling frequency for the 8051 was calculated to be 50 kHz, this result is what could be expected. 
 
+Prior to implementing the filter with the 8051’s MAC, a software implementation of the IIR filter was used to make it easier to debug this section of the lab. Although the output signals of the software implementation are generally the same as the MAC, the algorithms performance is limited compared to the MAC counterpart. This is because the code takes longer to compute the output values than the MAC due to the innate latency involved with running the code. 
+
+If more time was given to complete this lab assignment, the voltmeter created in section one of the lab would be modified to achieve the functionalities described in section two of the lab. This would create a digital voltmeter which would be capable of measuring the frequency of input waveforms as well as the AC RMS voltage value of the signal. 
 
 
 
