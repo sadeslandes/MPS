@@ -51,10 +51,9 @@ The code for parts 1, 2 and 3 can be found in the appendix below. All code was u
 The purpose of this program is to create a digital voltmeter using the analog to digital converter (ADC) on the 8051. When the pushbutton is pressed, an A-D conversion begins, and the result is used to calculate a voltage which is then displayed on the terminal. 
 
 Configurations for the ADC can be found in the REFOCN, ADC0CF, and ADC0CN registers, as well as the AMX0SL and AMX0CF registers for selecting the mode of operation of the analog input pins and which pins are selected for use. In the REF0CN SFR, bit1 enables the bias generator; this must be enabled. Bit0 of this SFR enables the internal reference buffer, which sets VREF0 to 2.4V. When using an external voltage source as a reference, this bit should be disabled. For this section the internal voltage reference was used. For the purposes of this lab, only one analog input operating in single-ended mode was needed, therefore the AMX0SL and AMX0CF registers did not require any modification; using the reset (default) values of these SFRs results in AIN0.0 selected with the desired mode of operation. The ADC0CF SFR, sets the gain for the input voltage (AIN0.0) and the sampling rate for the conversion process. The sampling rate can be calculated as a function of SYSCLK and the value loaded into AD0SC (bit3-bit7 of this SFR) using the following equation:
-\begin{align*}
-AD0SC = \frac{SYSCLK}{2\times CLK_{SAR0}}-1\\
-\text{where $CLK_{SAR0}$ is the ADC sampling rate.}
-\end{align*}
+\begin{gather*}
+AD0SC = \frac{SYSCLK}{2\times CLK_{SAR0}}-1\\\text{where $CLK_{SAR0}$ is the ADC sampling rate.}
+\end{gather*}
 \noindent
 Bits0-2 of this SFR are used to set the gain. For this lab a gain of 1 was used with AD0SC set to 23, resulting in an $SAR_{CLK}$ of approximately \si{1}{MHz}. Lastly ADC0 must be enabled via bit7 of the ADC0CN, which is also bit addressable as AD0EN.
 
