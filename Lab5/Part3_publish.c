@@ -1,4 +1,7 @@
-
+// Nick Choi and Samuel Deslandes
+// Code for Part 3 of Lab 5
+// This program writes 16 4-bit values from an array to the first 16 spaces on a nibble chip.
+// This chip starts at address 0x4000
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------

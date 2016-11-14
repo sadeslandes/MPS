@@ -1,4 +1,10 @@
-
+// Nick Choi and Samuel Deslandes
+// Code for Lab 5 enhancement
+// This program is an extention of the code for part 1. It allows the user to select
+// an internal space to initally write to as well as input a value to be written. Rather than
+// just writing to addressed 0x2000-0x27FF as was done in part 1, this program writes to all 3 chips.
+// (0x2000 - 0x43FF). Since there are no chips assigned to values 0x3000-0x3FFF, no values will be read
+// back within this range. 
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------

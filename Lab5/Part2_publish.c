@@ -1,4 +1,8 @@
-
+// Nick Choi and Samuel Deslandes
+// Code for Part 2 of Lab 5
+// This program first writes 0xAA to external memory addresses 0x2800-0x2FFF,
+// then overwrites these addresses with 0x55. Any addresses that do not read back 0x55
+// are added to an array which is printed at the end of the program.
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------

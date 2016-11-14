@@ -1,4 +1,7 @@
-
+// Nick Choi and Samuel Deslandes
+// Code for Part 1 of Lab 5
+// This program writes a char to an internal xram memory space, reads back the value,
+// then writes that value to external xram (on the protoboard) to addresses 0x2000-0x2800
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
