@@ -82,12 +82,18 @@ Once ''asciichar`` has been assigned P3 is reset to \texttt{0x0F}, and after ano
 In the main function, rather than using `getchar()' to get user input, a new function ``getkeychar()'' was written. This function waits for the flag variable set in the /INT0 ISR to go high, resets the flag, then returns the ``asciiflag''. The rest of the main algorithm is the same as it was in the previous section.  
 
 \subsection{Hardware}
+The hardware for this lab involved interfacing the 8051 with a LCD screen in part 2, and a keypad in part 3.
 
 \subsubsection{Part 1}
+No hardware was required for this section.
 
 \subsubsection{Part 2}
+In this section a LCD screen was wired to the 8051. A schematic for this can be viewed in Figure \ref{LCD} in the appendices section below.%how was it wired
 
 \subsubsection{Part 3}
+In this section a keypad was wired to the 8051. A schematic can be viewed in Figure \ref{KEY} in the appendices section below. The keypad requires 8 wires, 4 for the columns and 4 for the rows, each of which are connected to port 3 on the 8051. The columns are connected to the lower nibble of port 3 (P3.0--P3.3) which is configured as open-drain for input. These wires are held high using a 3.3\si{V} and 10k\si{\ohm} pull-up resistors, and are also used as inputs to a four input and gate. The output of this gate is used as the /INT0 interrupt source and is connected to pin 2 of port 0 (P0.2).
+
+The rows are connected to the high nibble of port 3 (P3.4--P3.7), which is configured as push-pull for output. These wires are held low by the software. 
 
 \section{Results}
 
@@ -128,7 +134,9 @@ In the main function, rather than using `getchar()' to get user input, a new fun
 
 \section{References} 
 \noindent
-``MPS Lab 6," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/MPS_Lab_Ex5-Memory.pdf}. Accessed: Nov. 27, 2016.\\
+``MPS Lab 6," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/MPS_Lab_Ex6-Magic8Ball.pdf}. Accessed: Nov. 27, 2016.\\
+\newline\noindent
+``Interfacing a Hitachi HD44780 to a Silicon Laboratories C8051F120," in RPI ECSE Department, 2016. [Online]. Available: \url{http://www.rpi.edu/dept/ecse/mps/LCD_Screen-8051.pdf}. Accessed: Nov. 27, 2016.\\
 \newline\noindent
 ``C8051 Manual," in RPI ECSE Department, 1.4 ed., 2005. [Online]. Available: \url{https://www.ecse.rpi.edu/courses/CStudio/Silabs/C8051F12x-13x.pdf}. Accessed: Nov. 27, 2016.
 
