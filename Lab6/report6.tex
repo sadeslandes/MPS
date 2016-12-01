@@ -71,6 +71,15 @@ The code for this section of the lab is an enhancement of the previous part, whi
 The code for this section further enhances that of the previous section by using a keypad to receive user input, rather than the keyboard. The keypad is wired such that when a key is pressed, an external interrupt (/INT0) is triggered. To do this, /INT0 must be routed to port pin P0.2, which is done by setting bit 2 of the XBR1 SFR. Next, global interrupts and /INT0 must be enabled, which can be done using the bit-addressable variables `EA' and `EX0' respectively. 
 
 %talk about key wakeup and decoding
+Once /INT0 has been triggered, the associated ISR must decode the signals on port 3 to determine which key has been pressed. The ISR starts by setting `EX0' to 0, disabling interrupts on /INT0. Next, a flag variable is set, and the lower nibble of P3 is stored in a variable called ``keyvalue'' for use in decoding columns. This is done using a bitwise AND operation between P3 and \texttt{0x0F}.
+
+At this point the rows can be decoded. To check if a key in the top row was pressed, P3 is set to \texttt{0x8F}, and after a short pause the lower nibble of P3 is evaluated. If it evaluates to \texttt{0x0F}, this is the row that was selected, and the ISR moves on to decode the columns. If this is not the case, then this process is repeated setting P3 to \texttt{0x4F}, \texttt{0x2F}, or \texttt{0x1F} for each of the subsequent rows. 
+
+Decoding columns is done by simply evaluating the ``keyvalue'' variable declared before the row decoding to determine which bit in its lower nibble has a value of 0. This is done using the comparison operator with the values \texttt{0x07}, \texttt{0x0B}, \texttt{0x0D}, and \texttt{0x0E} corresponding to the columns of the keypad from left to right. Once the selected column has been identified, a character can be assigned to a global variable ``asciichar'' for use in the main function. Figure \ref{KEY} in the appendices section can be used as a reference for which row and column intersection corresponds to what character. 
+
+Once ''asciichar`` has been assigned P3 is reset to \texttt{0x0F}, and after another pause /INT0 is re-enabled and the program returns from the ISR.  
+
+In the main function, rather than using `getchar()' to get user input, a new function ``getkeychar()'' was written. This function waits for the flag variable set in the /INT0 ISR to go high, resets the flag, then returns the ``asciiflag''. The rest of the main algorithm is the same as it was in the previous section.  
 
 \subsection{Hardware}
 
