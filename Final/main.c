@@ -20,24 +20,25 @@
 #define SYSCLK      49766400            // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200              // UART baud rate in bps
 #define COLS_		80
-#define	ROWS_		24
+#define	ROWS_		50
+#define CHAR_ 		219
 int ADCx;
 int ADCy;
-signed char xPos = 1;
-signed char yPos = 1;
-char pressed = 0;
-char time = 60;
+int sens;
+char time;
 int score = 0;
 char str[16];
 char rows[11];
 char cols[11];
 char timer0_flag = 0;
 char keyflag = 0;
+signed char xPos, yPos;
+//Key wakeup vars
 char asciichar;
 char portvalue;
 char keyvalue;
+
 char nboxes;
-char hits = 0;
 unsigned int i;
 //------------------------------------------------------------------------------------
 // Function Prototypes
@@ -48,20 +49,25 @@ void PORT_INIT(void);
 void UART0_INIT(void);
 void TIMER0_INIT(void);
 void ADC0_INIT(void);
-void get_XY(void);
+void read_ADC(void);
 void stickPress(void) __interrupt 2;
 void TIMER0_ISR(void) __interrupt 1;
 char getkeychar(void);
 void Menu(void);
-void generateBox(char n);
+void generateBox(void);
+void drawTarget(void);
+void eraseTarget(char row, char col);
+void checkTarget(char x, char y);
 void checkBox(char x, char y);
+void WinScreen(void);
+void LoseScreen(void);
+void playGame(void);
 //------------------------------------------------------------------------------------
 // MAIN Routine
 //------------------------------------------------------------------------------------
 void main(void)
 {
-    char w;
-	char choice;
+	//char c;
 	WDTCN = 0xDE;                       // Disable the watchdog timer
     WDTCN = 0xAD;
 
@@ -73,51 +79,30 @@ void main(void)
 	lcd_init();							// Initialize LCD
 
     SFRPAGE = UART0_PAGE;               // Direct output to UART0
-
-    printf("\033[2J");                  // Erase screen & move cursor to home position
 	EX0 = 1;
+    
+	while(1){
+		playGame();
+	}
+	
+}
+
+void playGame(){
+	unsigned int speed;
+	xPos = 1;					// Corresponds with column
+	yPos = 1;					// Corresponds with row
+	score = 0;
+
+	printf("\033[1;37;44m");
+	printf("\033[2J");
 	Menu();
-
-	choice = getkeychar();
-	//printf("%c",choice);
-	switch(choice){
-		case 'A':
-			nboxes = 5;
-			//printf("worked");
-			generateBox(5);
-			//printf("\n\rAfter generateBox()");
-			break;
-		case 'B':
-			nboxes = 7;
-			generateBox(7);
-			break;
-		case 'C':
-			nboxes = 9;
-			generateBox(9);
-			break;
-		case 'D':
-			nboxes = 11;
-			generateBox(11);
-			break;
-		default:
-			lcd_clear();
-			lcd_puts((char*)&"Invalid input");
-	}
-	
 	printf("\033[H");
-	for(w=0;w<11;w++){
-		printf("%d,",rows[w]);	
-	}
-	printf("\n\r");
-	for(w=0;w<11;w++){
-		printf("%d,",cols[w]);	
-	}
 	
-
-	printf("\033[H");
-	while(1)
-    {
-		get_XY();
+	TR0 = 1;					// Start timer0
+	while(1){
+		// Cursor movement control
+		read_ADC();
+		speed = -11*sens+65535;		
 		if(ADCx > 3200){//move left
 			printf("\033[1D");
 			xPos-=1;
@@ -139,114 +124,260 @@ void main(void)
 			if(yPos > ROWS_) yPos = ROWS_;
 		}
 		
-		if(timer0_flag == 20){
+		if(timer0_flag == 10){
 			timer0_flag = 0;
 			time-=1;
 		}
 
-		/*
-		//Display time
+		// Write to lcd
+		// Display time
 		sprintf(str,"%u",time);
 		lcd_clear();
+		lcd_goto(0);
 		lcd_puts(str);
-		*/
-		
+		// Display score
+		lcd_goto(0x40);
+		sprintf(str,"Score: %u",score);
+		lcd_puts(str);
+
+		//Check win
 		if(nboxes==0){
-			printf("\033[2J");
-			printf("YOU WIN");
-			while(1);
+			WinScreen();
+			break;
 		}
 		
+		//Check lose
 		if(time == 0){
-			printf("\033[2J");
-			printf("TIME UP");
-			while(1);
+			LoseScreen();
+			break;
 		}
-	
-		for(i=0;i<65535;i++);
-    }
-	
+
+		if(time == 5){
+			P2 = 0x01;
+		}
+		if(time == 4){
+			P2 = 0x00;
+		}
+		
+
+		for(i=0;i<speed;i++);
+	}
+	TR0 = 0;
+	TH0 = 0xA6;
+	TL0 = 0x00;
+	while(1){	
+		if(getkeychar()=='#') break;
+	}
 }
 
 void Menu(void)
 {
+	char choice;
 	printf("Select difficulty level\n\r");
 	printf("A.) Easy\n\r");
 	printf("B.) Medium\n\r");
 	printf("C.) Hard\n\r");
 	printf("D.) GG\n\r");
+
+	choice = getkeychar();
+	//printf("%c",choice);
+	switch(choice){
+		case 'A':
+			time = 60;
+			nboxes = 5;
+			drawTarget();
+			break;
+		case 'B':
+			time = 45;
+			nboxes = 7;
+			drawTarget();
+			break;
+		case 'C':
+			time = 30;
+			nboxes = 9;
+			drawTarget();
+			break;
+		case 'D':
+			time = 15;
+			nboxes = 11;
+			drawTarget();
+			break;
+		default:
+			lcd_clear();
+			lcd_puts((char*)&"Invalid input");
+	}
 }
 
 char getkeychar(){
-	while(!keyflag){
-		//printf("Keyflag not set\n\r");
-	}
+	while(!keyflag);
 	keyflag = 0;
 	return asciichar;
 }
 
-void generateBox(char n)
-{	
+void WinScreen(void)
+{
+    printf("\033[H");
+    printf("\033[30m");
+    printf("\033[47m");
+    printf("\033[2J");
+    printf("\033[24;35H");
+    for(i=0; i<10; i++)
+    {
+        printf("-");
+    }
+    printf("\033[25;36H");
+    printf("You WIN!");
+    printf("\033[25;35H");
+    printf("|");
+    printf("\033[25;44H");
+    printf("|");
+    printf("\033[26;35H");
+    for(i=0; i<10; i++)
+    {
+        printf("-");
+    }
+}
+
+void LoseScreen(void)
+{
+    printf("\033[H");
+    printf("\033[30m");
+    printf("\033[47m");
+    printf("\033[2J");
+    printf("\033[24;34H");
+    for(i=0; i<12; i++)
+    {
+        printf("-");
+    }
+    printf("\033[25;35H");
+    printf("You LOSE!!");
+    printf("\033[25;34H");
+    printf("|");
+    printf("\033[25;45H");
+    printf("|");
+    printf("\033[26;34H");
+    for(i=0; i<12; i++)
+    {
+        printf("-");
+    }
+}
+
+void drawTarget(){
 	char row,col,j;
+	char redo;
 	//char box = 129;
 	printf("\033[2J");
-	for(j=0;j<n;j++)
+	for(j=0;j<nboxes;j++)
 	{
-		row = rand()%24;
-		col = rand()%80;
+		redo = 0;
+		//srand(TL0);
+		row = rand()%(ROWS_-2) +2;  // check my logic
+		col = rand()%(COLS_-2) +2;
+
+
+		// Check that targets down collide
+		for(i=0;i<j;i++){
+			if((row >= rows[i]-2)&&\
+			   (row <= rows[i]+2)&&\
+			   (col >= cols[i]-2)&&\
+			   (col <= cols[i]+2)){
+				redo+=1;
+				break;
+			}
+		}
+		
+		if(redo){
+			j-=1;
+			continue;
+		}
+
+
 		rows[j] = row;
 		cols[j] = col;
-		//printf("row:%i   col:%i \r\n", rows[j],cols[j]);
+		
+		
+		printf("\033[37m");	// change color to yellow
+		// Yellow blocks to mark target
+		printf("\033[%d;%dH",row-1,col-1);
+		printf("%c%c%c",CHAR_,CHAR_,CHAR_);
+		printf("\033[%d;%dH",row+1,col-1);
+		printf("%c%c%c",CHAR_,CHAR_,CHAR_);
+		printf("\033[%d;%dH",row,col-1);
+		printf("%c%c%c",CHAR_,CHAR_,CHAR_);
+		// Red bullseye
 		printf("\033[%d;%dH",row,col);
-		printf("%c",127);
-		/*
-		lcd_cmd(0x01);	
-		lcd_goto(0);		
-		lcd_puts("True");
-		*/
+		printf("\033[31m"); // change color to red
+		printf("%c",CHAR_);
+
+		
 	}
 }
 
-void checkBox(char x, char y)
-{
+void eraseTarget(char row,char col){
+	printf("\033[%d;%dH",row-1,col-1);
+	printf("   ");
+	printf("\033[%d;%dH",row,col-1);
+	printf("   ");
+	printf("\033[%d;%dH",row+1,col-1);
+	printf("   ");
+}
+
+
+void checkTarget(char x, char y){
 	char k;
-	hits+=1;
-	/*
-	sprintf(str,"(%d,%d)",x,y);
-	lcd_clear();
-	lcd_puts(str);
-	*/
+	char hit = 0;
 	
 	for(k=0;k<11;k++)
 	{
-		if((y == rows[k])&&(x == cols[k]))
-		{
-			//printf("\033[%c;%cH",y,x);
-			rows[k] = 0;
-			cols[k] = 0;
-			printf(" ");
-			nboxes-=1;
-			
-			//debug
-			printf("\033[H");
-			for(i=0;i<11;i++){
-				printf("%d,",rows[i]);	
+		// Hit detection by rows
+
+		// row above
+		if(y==rows[k]-1){
+			if((x>=cols[k]-1)&&(x<=cols[k]+1)){
+				score+=10;
+				hit+=1;
+				break;
 			}
-			printf("\n\r");
-			for(i=0;i<11;i++){
-				printf("%d,",cols[i]);	
+		}
+		// row below
+		if(y==rows[k]+1){
+			if((x>=cols[k]-1)&&(x<=cols[k]+1)){
+				score+=10;
+				hit+=1;
+				break;
 			}
-			
-			break;
+		}
+		// center row
+		if(y==rows[k]){
+			if(x==cols[k]){
+				// Bullseye
+				score+=100;
+				hit+=1;
+				break;
+			}
+			if((x==cols[k]-1)||(x==cols[k]+1)){
+				score+=10;
+				hit+=1;
+				break;
+			}
 		}
 	}
-	printf("\033[H\n\nPresses: %d\n\r%d",hits,nboxes);
+	if(hit){
+		
+		printf("\033[s");
+		eraseTarget(rows[k],cols[k]);
+		printf("\033[u");
+		rows[k] = 200; // unreachable location
+		cols[k] = 200; // unreachable location
+		nboxes-=1;
+	}
+	//printf("\033[H\n\nPresses: %d\n\r%d",hits,nboxes);
 }
 
-void get_XY(){
-	char i;
+
+void read_ADC(){
 	AMX0SL = 0x00;
-	for(i=0;i<255;i++);
+	for(i=0;i<300;i++);
 	AD0INT = 0; 				// Clear conversion interrupt flag
 	AD0BUSY = 1;   				// Start conversion
 	while(!AD0INT);				// Wait for conversion to end
@@ -254,11 +385,19 @@ void get_XY(){
 	
 	
 	AMX0SL = 0x01;
-	for(i=0;i<255;i++);
+	for(i=0;i<300;i++);
 	AD0INT = 0; 				// Clear conversion interrupt flag
 	AD0BUSY = 1;   				// Start conversion
 	while(!AD0INT);				// Wait for conversion to end
 	ADCx = ADC0; //ADC0H;
+
+	AMX0SL = 0x02;
+	for(i=0;i<300;i++);
+	AD0INT = 0; 				// Clear conversion interrupt flag
+	AD0BUSY = 1;   				// Start conversion
+	while(!AD0INT);				// Wait for conversion to end
+	sens = ADC0; //ADC0H;
+	
 }
 
 // External Interrupt 0 ISR
@@ -369,13 +508,15 @@ void KeypadVector(void) __interrupt 0{
 }
 
 void stickPress(void) __interrupt 2{
-	for(i=0;i<200;i++);
-	checkBox(xPos,yPos);
+	//printf("\033[1;1H");
+	for(i=0;i<300;i++);
+	//checkBox(xPos,yPos);
+	checkTarget(xPos,yPos);
 }
 
 void TIMER0_ISR(void) __interrupt 1{  // reset timer to 0x3580 and increment flag
-	TH0 = 0x35;
-	TL0 = 0x80;
+	TH0 = 0xA6;
+	TL0 = 0x00;
 	timer0_flag += 1;
 }
 //------------------------------------------------------------------------------------
@@ -391,25 +532,11 @@ void SYSCLK_INIT(void)
     SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
     SFRPAGE = CONFIG_PAGE;
-    OSCXCN  = 0x67;                     // Start ext osc with 22.1184MHz crystal
+    OSCXCN  = 0x77;                     // Start ext osc with 11.0592MHz crystal
     for(i=0; i < 256; i++);             // Wait for the oscillator to start up
     while(!(OSCXCN & 0x80));
     CLKSEL  = 0x01;
     OSCICN  = 0x00;
-
-    SFRPAGE = CONFIG_PAGE;
-    PLL0CN  = 0x04;
-    SFRPAGE = LEGACY_PAGE;
-    FLSCL   = 0x10;
-    SFRPAGE = CONFIG_PAGE;
-    PLL0CN |= 0x01;
-    PLL0DIV = 0x04;
-    PLL0FLT = 0x01;
-    PLL0MUL = 0x09;
-    for(i=0; i < 256; i++);
-    PLL0CN |= 0x02;
-    while(!(PLL0CN & 0x10));
-    CLKSEL  = 0x02;
 
     SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
 }
@@ -436,6 +563,8 @@ void PORT_INIT(void)
 
     P0MDOUT |= 0x01;                    // Set TX0 on P0.0 pin to push-pull
     P1MDOUT |= 0x40;                    // Set green LED output P1.6 to push-pull
+	P2MDOUT  = 0x01;
+	P2       = 0x00;
 	P3MDOUT  = 0xF0;                    // Set P3 high nibble as output, low nibble as input
 	P3 		 = 0x0F;					// P3 high nibble set to 0v
 
@@ -460,7 +589,7 @@ void UART0_INIT(void)
     SFRPAGE = TIMER01_PAGE;
     TMOD   &= ~0xF0;
     TMOD   |=  0x20;                    // Timer1, Mode 2, 8-bit reload
-    TH1     = -(SYSCLK/BAUDRATE/16);    // Set Timer1 reload baudrate value T1 Hi Byte
+    TH1     = 0xFA;    					// Set Timer1 reload baudrate value T1 Hi Byte
     CKCON  |= 0x10;                     // Timer1 uses SYSCLK as time base
     TL1     = TH1;
     TR1     = 1;                        // Start Timer1
@@ -482,11 +611,11 @@ void TIMER0_INIT(void){
 
 	TMOD &= 0xF0;				// Timer0, Mode 1: 16-bit counter/timer.
 	TMOD |= 0x01;
-	TH0 = 0x35;					// Set high byte such that timer0 starts at 0x3580
+	TH0 = 0xA6;					// Set high byte such that timer0 starts at 0xA600
 	CKCON &= ~0x09;
 	CKCON |= 0x02;				// Timer0 uses SYSCLK/48 as base
-	TL0 = 0x80;					// Set high byte such that timer0 starts at 0x3580
-	TR0 = 1;					// Start timer0
+	TL0 = 0x00;					// Set high byte such that timer0 starts at 0xA600
+
 
 	SFRPAGE = CONFIG_PAGE;
 	ET0 = 1;					// Enable timer0 interrupt
