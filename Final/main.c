@@ -100,24 +100,24 @@ void playGame(){
 	TR0 = 1;							// Start timer0
 	while(1){
 		// Cursor movement control
-		read_ADC();
-		speed=-11*sens+65535;
-		if(ADCx > 3200){				//move left
+		read_ADC();						// Get ADC vals
+		speed = -11*sens+65535;			// Map sensitivity
+		if(ADCx > 3200){				// Move left
 			printf("\033[1D");
 			xPos-=1;
 			if(xPos < 1) xPos = 1;
 		}
-		if(ADCx < 500 ){				//move right
+		if(ADCx < 500 ){				// Move right
 			printf("\033[1C");
 			xPos+=1;
 			if(xPos > COLS_) xPos = COLS_;
 		}
-		if(ADCy < 150){					//move up
+		if(ADCy < 150){					// Move up
 			printf("\033[1A");
 			yPos-=1;
 			if(yPos < 1) yPos = 1;
 		}
-		if(ADCy > 3200){				//move down
+		if(ADCy > 3200){				// Move down
 			printf("\033[1B");
 			yPos+=1;
 			if(yPos > ROWS_) yPos = ROWS_;
@@ -184,7 +184,9 @@ void Menu(void)
 	printf("B.) Medium\n\r");
 	printf("C.) Hard\n\r");
 	printf("D.) GG\n\r");
-	printf("\n\n\rUse the joystick to move the cursor over the targets.\n\rPress the joystick in to 'shoot' the target.\n\rMore points are awarded for hitting the bullseye.");
+	printf("\n\n\rUse the joystick to move the cursor over the targets.\n\r");
+	printf("Press the joystick in to 'shoot' the target.\n\r");
+	printf("More points are awarded for hitting the bullseye.");
 	// Wait for and parse user input
 	choice = getkeychar();
 	switch(choice){
