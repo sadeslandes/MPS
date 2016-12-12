@@ -20,15 +20,15 @@
 	showstringspaces=false,         % underline spaces within strings
 	showtabs=false,                 % show tabs within strings adding particular underscores
 	%frame=single,           % adds a frame around the code
-	tabsize=2,          % sets default tabsize to 2 spaces
+	tabsize=4,          % sets default tabsize to 2 spaces
 	captionpos=b,           % sets the caption-position to bottom
-	breaklines=true,        % sets automatic line breaking
+	breaklines=false,        % sets automatic line breaking
 	breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
 	escapeinside={\%*}{*)}          % if you want to add a comment within your code
 }
 
 \begin{document}
-\title{Microprocessor Systems\\ Lab 6: Memory Interfacing }
+\title{Microprocessor Systems\\ Final Project: ANSI Target Game}
 \author{Alvin Chia \and Nick Choi \and Samuel Deslandes \and Shanmugam Thiagarajan}
 \date{12/13/16}
 \maketitle
@@ -49,7 +49,7 @@ The program for this project was organized into several functions. The `main()' 
 ADC0SC=\frac{SYSCLK}{2\times SARclk}-1\\
 \textrm{where ADC0SC is bits 3--7 of ADC0CF}
 \end{gather*}
-The internal reference buffer and bias generator are enabled, producing a voltage of 2.4\si{V}, which is used as a reference for conversions. 
+The internal reference buffer and bias generator are enabled, producing a voltage of 2.4\si{V}, which is used as a reference for conversions. All inputs are also treated as single-ended inputs.
 
 Finally, Timer0 is used to accurately count game time in measurements of a tenth of a second. It's configured as a 16-bit counter using SYSCLK/48 as a base. For an overflow of this timer to occur every tenth of a second, the timer must be set to start counting at \texttt{0xA600} on initialization as well as after every overflow. This can be calculated as follows:
 \begin{gather*}

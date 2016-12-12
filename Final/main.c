@@ -17,33 +17,33 @@
 #define EXTCLK      11059200            // External oscillator frequency in Hz
 #define SYSCLK      11059200            // Output of PLL derived from (EXTCLK * 9/4)
 #define BAUDRATE    115200              // UART baud rate in bps
-#define COLS_		80
-#define	ROWS_		50
-#define CHAR_ 		219					// Ascii code for block
+#define COLS_       80
+#define	ROWS_       50
+#define CHAR_       219                 // Ascii code for block
 //------------------------------------------------------------------------------------
 // Global Constants
 //------------------------------------------------------------------------------------
-int ADCx;								// ADC variables
+int ADCx;                               // ADC variables
 int ADCy;
 int sens;
-char time;								// Game variables
+char time;                              // Game variables
 int score = 0;
-char nboxes;							// Number of targets on screen
-char str[16];							// Char buffer for use with sprintf() for printing to LCD
-char rows[11];							// Arrays for row and col coordinates for center of targets
+char nboxes;                            // Number of targets on screen
+char str[16];                           // Char buffer for use with sprintf() for printing to LCD
+char rows[11];                          // Arrays for row and col coordinates for center of targets
 char cols[11];
-char timer0_flag = 0;					// Flag for 
-signed char xPos, yPos;					// Coordinates of cursor
-char asciichar;							// Key wakeup vars
+char timer0_flag = 0;                   // Flag for 
+signed char xPos, yPos;                 // Coordinates of cursor
+char asciichar;                         // Key wakeup vars
 char portvalue;
 char keyvalue;
 char keyflag = 0;
-unsigned int i;							// General variable for use in for loops
+unsigned int i;                         // General variable for use in for loops
 //------------------------------------------------------------------------------------
 // Function Prototypes
 //------------------------------------------------------------------------------------
 void main(void);
-void SYSCLK_INIT(void);					// Inits
+void SYSCLK_INIT(void);                 // Inits
 void PORT_INIT(void);
 void UART0_INIT(void);
 void TIMER0_INIT(void);
@@ -84,16 +84,15 @@ void main(void)
 	
 }
 
-/*
-	Main gameplay rountine
-*/
+//Main gameplay rountine
 void playGame(){
 	unsigned int speed;
 	xPos = 1;							// Initial cursor position is home: (1,1)
 	yPos = 1;					
 	score = 0;
 
-	printf("\033[1;37;44m");			// Set terminal background to blue and foreground to yellow. Colors are bright.
+	printf("\033[1;37;44m");			// Set terminal background to blue and foreground to yellow.\
+										   Colors are bright.
 	printf("\033[2J");					// Clear screen and return cursor to home position
 	Menu();								// Display game main menu
 	printf("\033[H");					// Return cursor to home position
@@ -102,7 +101,7 @@ void playGame(){
 	while(1){
 		// Cursor movement control
 		read_ADC();
-		speed = -11*sens+65535;		
+		 	
 		if(ADCx > 3200){				//move left
 			printf("\033[1D");
 			xPos-=1;
@@ -296,12 +295,12 @@ void drawTarget(){
 			continue;
 		}
 
-		rows[j] = row;						// If new target center coordinates are valid, add then to the arrays
+		rows[j] = row;						// If new coordinates are valid, add them to the arrays
 		cols[j] = col;
 		
 		// Draw targets
 		printf("\033[37m");					// change color to white
-		printf("\033[%d;%dH",row-1,col-1);	// Move cursor to left most column of each row with (col,row) at its center
+		printf("\033[%d;%dH",row-1,col-1);	// Move cursor one above and to the left of center
 		printf("%c%c%c",CHAR_,CHAR_,CHAR_);	// and print 3 block
 		printf("\033[%d;%dH",row+1,col-1);
 		printf("%c%c%c",CHAR_,CHAR_,CHAR_);
@@ -318,7 +317,7 @@ void drawTarget(){
 
 // Erase target centered at (col,row)
 void eraseTarget(char row,char col){
-	printf("\033[%d;%dH",row-1,col-1);		// Move cursor to left most column of each row of the target
+	printf("\033[%d;%dH",row-1,col-1);		// Move cursor to left most column of each row of box
 	printf("   ");							// and overwrite with spaces
 	printf("\033[%d;%dH",row,col-1);
 	printf("   ");
@@ -635,7 +634,7 @@ void ADC0_INIT(void){
     SFRPAGE_SAVE = SFRPAGE;
 	SFRPAGE = ADC0_PAGE;
 
-	REF0CN |= 0x03;			            // turn on internal ref buffer and bias generator, vref0 is ref voltage
+	REF0CN |= 0x03;			            // turn on internal ref buffer and bias generator
 	ADC0CF = 0xBF;						// AD0SC = 23 for SARclk of 230400hz, Gain = 1 		
 	AD0EN = 1;  						// enable ADC0
 	
