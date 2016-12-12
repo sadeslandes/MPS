@@ -35,8 +35,8 @@ char cols[11];
 char timer0_flag = 0;                   // Flag for 
 signed char xPos, yPos;                 // Coordinates of cursor
 char asciichar;                         // Key wakeup vars
-char portvalue;
-char keyvalue;
+//char portvalue;
+//char keyvalue;
 char keyflag = 0;
 unsigned int i;                         // General variable for use in for loops
 //------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ void playGame(){
 	while(1){
 		// Cursor movement control
 		read_ADC();
-		 	
+		speed=-11*sens+65535;
 		if(ADCx > 3200){				//move left
 			printf("\033[1D");
 			xPos-=1;
@@ -167,6 +167,7 @@ void playGame(){
 	TR0 = 0;
 	TH0 = 0xA6;
 	TL0 = 0x00;
+	printf("\033[28;26HPress '#' to return to menu.");
 	// Wait for user to press '#' on the keypad
 	while(1){	
 		if(getkeychar()=='#') break;
@@ -183,6 +184,7 @@ void Menu(void)
 	printf("B.) Medium\n\r");
 	printf("C.) Hard\n\r");
 	printf("D.) GG\n\r");
+	printf("\n\n\rUse the joystick to move the cursor over the targets.\n\rPress the joystick in to 'shoot' the target.\n\rMore points are awarded for hitting the bullseye.");
 	// Wait for and parse user input
 	choice = getkeychar();
 	switch(choice){
@@ -405,6 +407,7 @@ void read_ADC(){
 
 // External Interrupt 0  for keypad
 void KeypadVector(void) __interrupt 0{
+	char portvalue,keyvalue;
 	EX0 = 0;						// Disable /INT0
 	keyflag = 1;
 	keyvalue = P3 & 0x0F;	
@@ -518,7 +521,7 @@ void stickPress(void) __interrupt 2{
 
 // Timer0 interrupt ISR for counting tenths of seconds
 void TIMER0_ISR(void) __interrupt 1{  
-	// reset timer to 0x3580 and increment flag
+	// reset timer to 0xA600 and increment flag
 	TH0 = 0xA6;
 	TL0 = 0x00;
 	timer0_flag += 1;
