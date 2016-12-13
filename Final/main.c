@@ -1,7 +1,10 @@
 //------------------------------------------------------------------------------------
-// Final
+// ANSI Target game
 //------------------------------------------------------------------------------------
-
+// By Alvin Chia, Nick Choi, Samuel Deslandes, and Shanmugam Thiagarajan
+// This program plays a target game on an ANSI terminal using the 8051 microprocessor.
+// A joystick is used to move the cursor and shoot the targets, a keypad is used to 
+// receive user input, and an LCD screen displays game statistics.
 //------------------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
